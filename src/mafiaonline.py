@@ -20,8 +20,8 @@ class Client:
 		self.id      = self.account["o"]
 		return self.account
 
-	def friend_list(self, user_id:str = None):
-		self.send_server(self.tags.acfl(self.token, user_id if user_id else self.id))
+	def friend_list(self):
+		self.send_server(self.tags.acfl(self.token, self.id))
 		return self.listen()
 
 	def get_messages(self, friend_id):
