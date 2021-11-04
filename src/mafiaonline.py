@@ -1,5 +1,7 @@
-import requests, socket, json, threading
-from utils import tags
+import requests
+import socket
+import json
+import threading
 from utils import md5hash
 
 class Client:
