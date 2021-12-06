@@ -40,11 +40,11 @@ class Client:
             "lang":  lang
         }
         res = requests.post(f"http://{self.address}:8008/user/sign_up",
-            data=data,
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        ).json()
+                            data=data,
+                            headers={
+                                "Content-Type": "application/x-www-form-urlencoded"
+                                }
+                            ).json()
         return res
 
     def friend_list(self):
