@@ -87,8 +87,7 @@ class Client:
 					return
 
 	def send_server(self, j):
-		msg = json.dumps(j)+"\n"
-		self.client_socket.send(msg.encode())
+		self.client_socket.send((json.dumps(j)+"\n").encode())
 
 	def listen(self):
 		while (len(self.data) <= 0):
