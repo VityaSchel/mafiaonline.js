@@ -25,7 +25,7 @@ class Client:
 
 	def sign_up(self, nickname, email, password, lang:str="RUS"):
 		data = {'email': email,'username': "", 'password': self.md5hash.md5Salt(password),"deviceId": self.deviceId,'lang':lang}
-		res = requests.post("http://46.175.171.134:8008/user/sign_up", data=data, headers={"Content-Type":"application/x-www-form-urlencoded"}).json()
+		res = requests.post("http://37.143.8.68:8008/user/sign_up", data=data, headers={"Content-Type":"application/x-www-form-urlencoded"}).json()
 		if ("o" in res):
 			self.send_server({"t":res["t"], "ty":"uns", "u":nickname, "uo":res["o"]})
 		return res
@@ -61,7 +61,7 @@ class Client:
 
 	def create_connection(self):
 		self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.client_socket.connect(('46.175.171.134', 8090))
+		self.client_socket.connect(('37.143.8.68', 8090))
 		self.listener = threading.Thread(target=self.__listener).start()
 
 	def __listener(self):
