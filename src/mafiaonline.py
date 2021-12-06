@@ -65,20 +65,20 @@ class Client:
 		self.listener = threading.Thread(target=self.__listener).start()
 
 	def __listener(self):
-		while (1):
+		while True:
 			buffer = bytes()
-			while (True):
+			while True:
 				r = self.client_socket.recv(2084)
 				read = len(r)
-				if (read != -1):
+				if read != -1:
 					i = read - 1
-					if (r[i] == 0):
+					if r[i] == 0:
 						buffer = buffer + r
 						d = buffer.decode()
 						buffer = bytes()
 						for str in d.strip().split("[\u0000]"):
 							str = str.strip()[0:-1]
-							if (str != "p"):
+							if str != "p":
 								print("DEBUG>>"+str)
 								self.data.append(str)
 					else:
