@@ -2,7 +2,8 @@
 # simple mafia online bot
 import mafiaonline
 
-Mafia = mafiaonline.Client("email", "password")
+Mafia = mafiaonline.Client()
+Mafia.sign_in("email", "password")
 
 Mafia.join_global_chat() # join in global chat
 
