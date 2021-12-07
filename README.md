@@ -9,7 +9,8 @@ git clone https://github.com/Zakovskiy/mafiaonline.py
 ```python
 import mafiaonline
 
-Mafia = mafiaonline.Client("email", "password")
+Mafia = mafiaonline.Client()
+Mafia.sign_in("email", "password")
 ```
 
 ### [Telegram](https://t.me/zakovskiy)
