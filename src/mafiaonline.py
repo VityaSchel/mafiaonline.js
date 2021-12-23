@@ -7,23 +7,32 @@ from utils import md5hash
 
 class Client:
 
-    def __init__(self, email, password, deviceId: str = "1316eefdd6dc27a9"):
+    def __init__(self, deviceId: str = "1316eefdd6dc27a9"):
         self.account = None
         self.token = None
         self.id = None
         self.deviceId = deviceId
         self.md5hash = md5hash.Client()
         self.data = []
-        self.create_connection()
         self.address = "37.143.8.68"
-        self.sign_in(self.deviceId, email, password)
+        self.create_connection()
 
-    def sign_in(self, deviceId, email, password):
+    def sign_in(self, email: str, password: str):
+        """
+        Sign in into account
+
+        **Parametrs**
+            - **email** : Email of the account
+            - **password** : Password of the account
+
+        **Returns**
+            - **Success** : list
+        """
         data = {
-            "d":  deviceId,
-            "ty":  "sin",
-            "e":  email,
-            "pw":  self.md5hash.md5Salt(password)
+            "d": self.deviceId,
+            "ty": "sin",
+            "e": email,
+            "pw": self.md5hash.md5Salt(password)
         }
         self.send_server(data)
         self.account = self.listen()["uu"]
@@ -31,20 +40,32 @@ class Client:
         self.id = self.account["o"]
         return self.account
 
-    def sign_up(self, nickname, email, password, lang: str = "RUS"):
+    def sign_up(self, nickname, email, password, language: str = "RUS"):
+        """
+        Sign up new account
+
+        **Parametrs**
+            - **nickname** : Nickname of the account
+            - **email** : Email of the acount
+            - **password** : Password of the account
+            - **language** : Language
+
+        **Returns**
+            - **Success** : list
+        """
         data = {
-            "email":  email,
-            "username":  "",
-            "password":  self.md5hash.md5Salt(password),
-            "deviceId":  self.deviceId,
-            "lang":  lang
+            "email": email,
+            "username": nickname,
+            "password": self.md5hash.md5Salt(password),
+            "deviceId": self.deviceId,
+            "lang": language
         }
         res = requests.post(f"http://{self.address}:8008/user/sign_up",
-            data=data,
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded"
-            }
-        ).json()
+                            data=data,
+                            headers={
+                                "Content-Type": "application/x-www-form-urlencoded"
+                                }
+                            ).json()
         return res
 
     def friend_list(self):
@@ -69,8 +90,22 @@ class Client:
         self.send_server({"ty": "pmc", "m": {"fp": friend_id, "tx": content}})
         return self.listen()
 
-    def send_message_global(self, content):
-        self.send_server({"ty": "cmc", "m": {"tx": content}})
+    def send_message_global(self, content: str, message_style: int = 0):
+        """
+        Send message to global chat
+
+        **Parametrs**
+            - **content** - Content of message
+            - **message_style** - Style of message
+        """
+        data = {
+            "ty": "cmc",
+            "m": {
+                "tx": content,
+                "mstl": message_style,
+            }
+        }
+        self.send_server(data)
 
     def get_user(self, user_id):
         self.send_server({"ty": "gup"})
