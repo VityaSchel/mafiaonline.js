@@ -2,12 +2,13 @@ import requests
 import socket
 import json
 import threading
+import base64
 from utils import md5hash
 
 
 class Client:
 
-    def __init__(self, deviceId: str = "1316eefdd6dc27a9"):
+    def __init__(self, deviceId: str = "0"):
         self.account = None
         self.token = None
         self.id = None
@@ -15,7 +16,20 @@ class Client:
         self.md5hash = md5hash.Client()
         self.data = []
         self.address = "37.143.8.68"
+        self.rest_address = f"http://{self.address}:8008"
         self.create_connection()
+
+    def encode_auth_header(self):
+        return base64.b64encode(f"{self.id}=:={self.token}".encode("utf-8")).decode("utf-8").strip()
+    
+    def logout(self):
+        response = requests.post(f"{self.rest_address}/user/sign_out",
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": self.encode_auth_header()
+            }
+        ).json()
+        return response
 
     def sign_in(self, email: str, password: str):
         """
@@ -40,40 +54,99 @@ class Client:
         self.id = self.account["o"]
         return self.account
 
-    def sign_up(self, nickname, email, password, language: str = "RUS"):
-        """
-        Sign up new account
-
-        **Parametrs**
-            - **nickname** : Nickname of the account
-            - **email** : Email of the acount
-            - **password** : Password of the account
-            - **language** : Language
-
-        **Returns**
-            - **Success** : list
-        """
+    def sign_up(self, nickname, email, password, lang: str = "RUS"):
         data = {
             "email": email,
             "username": nickname,
             "password": self.md5hash.md5Salt(password),
             "deviceId": self.deviceId,
-            "lang": language
+            "lang": lang
         }
-        res = requests.post(f"http://{self.address}:8008/user/sign_up",
-                            data=data,
-                            headers={
-                                "Content-Type": "application/x-www-form-urlencoded"
-                                }
-                            ).json()
-        return res
+        response = requests.post(f"{self.rest_address}/user/sign_up",
+            data=data,
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded"
+            }
+        ).json()
+        return response
+
+    def user_change_sex(self, sex: int = 1):
+        response = requests.post(f"{self.rest_address}/user/change/sex",
+            data = {"sex": sex},
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization":self.encode_auth_header()
+            }
+        ).json()
+        return response
+        
+    def user_email_verify(self, lang: str = "RU"):
+        response = requests.post(f"{self.rest_address}/user/email/verify",
+            data = {"lang": lang},
+            headers={
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization":self.encode_auth_header()
+            }
+        ).json()
+        return response
+
+    def vote_player_list(self, user, room_Id):
+        self.send_server({"ty": "vpl", "uo": user, "ro": room_Id})
+        return self.listen()
+
+    def create_room(self, tt: str, vip: bool = True, br: bool = True, bd: bool = True, d: int = 0,
+        dc: bool = True, jr: bool = True, lv: bool = True, sp: bool = True, tr: bool = True,
+        mxp: int = 8, mnp: int = 1, pw: str = "", t: int = 0):
+        self.send_server({"ty": "rc",
+            "rr": {
+                "br": br,
+                "bd": bd,
+                "d": d,
+                "dc": dc,
+                "jr": jr,
+                "lv": lv,
+                "mxp": mxp,
+                "mnp": mnp,
+                "pw": self.md5hash.md5Salt(pw),
+                "sp": sp,
+                "tr": tr,
+                "t": t,
+                "tt": tt,
+                "venb": vip
+            }
+        })
+        return self.listen()
 
     def friend_list(self):
         self.send_server({"ty":  "acfl"})
         return self.listen()
 
+    def remove_friend(self, friend_Id):
+        self.send_server({"ty": "rf", "f": friend_Id})
+        return self.listen()
+
+    def update_photo(self, file):
+        self.send_server({"ty": "upp", "f": base64.encodebytes(file).decode()})
+        return self.listen()
+
+    def update_photo_server(self, file):
+        self.send_server({"ty": "ups", "f": base64.encodebytes(file).decode()})
+        return self.listen()
+
+    def update_sex(self, id: int = 0):
+        self.send_server({"ty": "ucs", "s": id})
+        return self.listen()
+
+    def message_complaint(self, text, screenshot_Id, user_Id):
+        self.send_server({"ty": "mc", "uo": user_Id, "r": text, "sc": screenshot_Id})
+        return self.listen()
+
     def get_messages(self, friend_id):
-        self.send_server({"ty":  "acpc", "fp": friend_id})
+        self.send_server({"ty": "acpc", "fp": friend_id})
+        return self.listen()
+
+    def cp(self, room_Id):
+        self.send_server({"ty": "cp", "ro": room_Id})
         return self.listen()
 
     def join_global_chat(self):
@@ -140,7 +213,7 @@ class Client:
 
     def send_server(self, j: list):
         j["t"] = self.token
-        j["uo"] = self.id
+        if "uo" not in j: j["uo"] = self.id
         self.client_socket.send((json.dumps(j)+"\n").encode())
 
     def listen(self):
