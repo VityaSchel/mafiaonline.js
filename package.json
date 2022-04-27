@@ -1,0 +1,19 @@
+{
+  "name": "mafiaonline.js",
+  "version": "1.0.0",
+  "description": "mafiaonline.py written in NodeJS",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VityaSchel/mafiaonline.js.git"
+  },
+  "author": "vityaschel <hi@hloth.dev> (https://hloth.dev/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VityaSchel/mafiaonline.js/issues"
+  },
+  "homepage": "https://github.com/VityaSchel/mafiaonline.js#readme"
+}

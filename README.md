@@ -1,26 +1,21 @@
-<h1 align="center">
-  Mafia Online API on Python
-</h1>
+# Mafia Online API
 
+# :exclamation: WORK IN PROGRESS :exclamation:
 
-<p align="center">
-  <a href="https://discord.gg/AsYzxRfT6J"><img src="https://bit.ly/32neyjM"></a>
-</p>
+NodeJS module with a set of useful methods to interact with [Mafia Online](https://play.google.com/store/apps/details?id=com.tokarev.mafia) API from dotapp (Vladimir Tokarev).
 
+This library is heavily based on work of [@Zakovskiy](https://github.com/Zakovskiy), props to him for reverse-engineering such a horrible thing as Mafia Online API, which I tried to [do myself](https://github.com/VityaSchel/mafia-tools) back in November, 2021.
 
-<p align="center">This library for application https://play.google.com/store/apps/details?id=com.tokarev.mafia</p>
+## Install
 
-# Install
 ```
-git clone https://github.com/Zakovskiy/mafiaonline.py
+npm i mafiaonline.js
 ```
 
-# Import and Auth
-```python
-import mafiaonline
+## Use
 
-Mafia = mafiaonline.Client()
-Mafia.sign_in("email", "password")
+```js
+import MafiaOnlineAPI from 'mafiaonline.js'
+
+const mafiaOnlineAPI = new MafiaOnlineAPI({ email: 'test@example.com', password: 'pythonsucks228' })
 ```
-
-### [Telegram](https://t.me/zakovskiy)
