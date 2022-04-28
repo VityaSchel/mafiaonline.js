@@ -21,3 +21,10 @@ export const aggregation = (baseClass, ...mixins) => {
   })
   return base
 }
+
+export class MafiaOnlineAPIError extends Error {
+  constructor(code, message) {
+    super(message)
+    this.code = code
+  }
+}
