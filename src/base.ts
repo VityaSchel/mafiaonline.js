@@ -1,7 +1,8 @@
-import { aggregation } from './utils'
+import { aggregation } from './utils.js'
 import nodefetch, { Headers } from 'node-fetch'
-import MafiaOnlineAPIAuth from './auth'
-import MafiaOnlineAPIChat from './chat'
+import MafiaOnlineAPIAuth from './auth.js'
+import MafiaOnlineAPIChat from './chat.js'
+import MafiaOnlineAPIConnection from './connection.js'
 
 export interface MafiaOnlineAPICredentials {
   email: string;
@@ -27,7 +28,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
     this.deviceID = null
     this.data = []
 
-    this.connection = this._createConnection()
+    this._createConnection()
   }
 
   credentials: MafiaOnlineAPICredentials
@@ -45,7 +46,8 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
 
 export interface MafiaOnlineAPIBase extends 
   MafiaOnlineAPIAuth, 
-  MafiaOnlineAPIChat 
+  MafiaOnlineAPIChat,
+  MafiaOnlineAPIConnection
 { }
 
 // function applyMixins(derivedCtor: any, constructors: any[]) {
@@ -70,5 +72,6 @@ export interface MafiaOnlineAPIBase extends
 export default class MafiaOnlineAPI extends aggregation(
   MafiaOnlineAPIBase,
   MafiaOnlineAPIAuth,
-  MafiaOnlineAPIChat
+  MafiaOnlineAPIChat,
+  MafiaOnlineAPIConnection
 ) { }

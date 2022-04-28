@@ -1,3 +1,3 @@
-import MafiaOnlineAPI  from './src/base'
+import MafiaOnlineAPI  from './src/base.js'
 
 export default MafiaOnlineAPI

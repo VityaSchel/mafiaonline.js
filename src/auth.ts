@@ -1,4 +1,4 @@
-import { MafiaOnlineAPIClassDeclarations, MafiaOnlineAPICredentials } from './index'
+import { MafiaOnlineAPIClassDeclarations, MafiaOnlineAPICredentials } from './base.js'
 
 export default class MafiaOnlineAPIAuth implements MafiaOnlineAPIClassDeclarations {
   credentials: MafiaOnlineAPICredentials
