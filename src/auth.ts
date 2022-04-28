@@ -27,7 +27,7 @@ class MafiaOnlineAPIAuth {
       ty: 'sin',
       e: email,
       pw: this._hashPassword(password)
-    })
+    }, 1, true)
     return this._signInResult(response)
   }
 
@@ -43,7 +43,7 @@ class MafiaOnlineAPIAuth {
       e: '', pw: '',
       t: token,
       o: userID
-    })
+    }, 1, true)
     return this._signInResult(response)
   }
 
@@ -63,8 +63,8 @@ class MafiaOnlineAPIAuth {
 
       case 'usi':
         this.account = new MafiaUser(response['uu'])
-        this.token = response['t']
-        this.id = response['o']
+        this.token = response['uu']['t']
+        this.id = response['uu']['o']
         this._authorized = true
         return this.account
 
@@ -73,8 +73,6 @@ class MafiaOnlineAPIAuth {
     }
   }
 
-  async 
-  
   _hashPassword(password: string): string {
     for(let i = 0; i < 5; i++)
       password = md5(password + 'azxsw')

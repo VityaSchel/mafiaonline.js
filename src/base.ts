@@ -2,6 +2,8 @@ import { aggregation, MafiaOnlineAPIError } from './utils.js'
 import MafiaOnlineAPIAuth from './auth.js'
 import MafiaOnlineAPIChat from './chat.js'
 import MafiaOnlineAPIConnection from './connection.js'
+import MafiaOnlineAPIAccount from './account.js'
+import MafiaUser from './constructors/user.js'
 import * as net from 'net'
 
 export interface MafiaOnlineAPICredentials {
@@ -13,7 +15,7 @@ export interface MafiaOnlineAPICredentials {
 
 export interface MafiaOnlineAPIClassDeclarations {
   credentials: MafiaOnlineAPICredentials
-  account: object
+  account: MafiaUser
   token: string
   id: number
   deviceID: string
@@ -26,7 +28,6 @@ export interface MafiaOnlineAPIClassDeclarations {
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
-  
   constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean = false) {
     let tokenCredentials
     if (credentials.token && credentials.userID){
@@ -45,7 +46,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
     this.account = null
     this.token = null
     this.id = null
-    this.deviceID = null
+    this.deviceID = "0"
     this.data = []
     this._listeners = []
 
@@ -71,7 +72,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   _authorized: boolean
   _listeners: Function[]
   credentials: MafiaOnlineAPICredentials
-  account: object
+  account: MafiaUser
   token: string
   id: number
   deviceID: string
@@ -85,7 +86,8 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
 export interface MafiaOnlineAPIBase extends 
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
-  MafiaOnlineAPIConnection
+  MafiaOnlineAPIConnection,
+  MafiaOnlineAPIAccount
 { }
 
 function applyMixins(derivedCtor: any, constructors: any[]) {
@@ -104,7 +106,8 @@ function applyMixins(derivedCtor: any, constructors: any[]) {
 applyMixins(MafiaOnlineAPIBase, [
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
-  MafiaOnlineAPIConnection
+  MafiaOnlineAPIConnection,
+  MafiaOnlineAPIAccount
 ])
 
 export default MafiaOnlineAPIBase

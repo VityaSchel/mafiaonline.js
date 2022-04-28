@@ -1,3 +1,4 @@
+import MafiaOnlineAPIConnection from './auth.js'
 import MafiaUser from './constructors/user.js'
 
 class MafiaOnlineAPIAccount {
@@ -6,18 +7,12 @@ class MafiaOnlineAPIAccount {
   account: MafiaUser
 
   async getUser() {
-    await new Promise<void>(resolve => 
-      setInterval(() => 
-        this._socketReady && 
-        this._authorized &&
-        resolve()
-      , 10)
-    )
-    
+    const user = await this._sendRequest({ ty: 'acd' }, 2)
+    this.account = new MafiaUser(user[0]['uu'])
     return this.account
   }
 }
 
-// interface MafiaOnlineAPIAccount extends MafiaOnlineAPIConnection { }
+interface MafiaOnlineAPIAccount extends MafiaOnlineAPIConnection { }
 
 export default MafiaOnlineAPIAccount

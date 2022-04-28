@@ -36,11 +36,11 @@ export default class MafiaOnlineAPIConnection {
       if (lastChunk) {
         const bufferData = Buffer.concat(bufferChunks)
         let data = bufferData.toString('utf-8')
-        for (let str of data.trim().split(/[\u0000]/)) {
-          data = data.trim().slice(0, -1)
-          if(str !== 'p') {
-            this.data.push(data)
-            this.log('Received response from server:', data)
+        for (let str of data.trim().split(/\u0000/)) {
+          const resultStr = str.trim()//.slice(0, -1)
+          if (resultStr.length > 0 && resultStr !== 'p') {
+            this.data.push(resultStr)
+            this.log('Received response from server:', resultStr)
           }
         }
       }
@@ -66,14 +66,14 @@ export default class MafiaOnlineAPIConnection {
     })
   }
   
-  _addListenerToQueue(): Promise<string> {
+  _addListenerToQueue(segmentsCount: number = 1): Promise<Array<string>> {
     return new Promise(resolve => {
       this._listeners.push(resolve)
-      this._listen()
+      this._listen(segmentsCount)
     })
   }
 
-  async _listen(timeout: number|void = 15) {
+  async _listen(segmentsCount: number = 1, timeout: number|void = 15): Promise<Array<string>> {
     if(this._listeners.length !== 1) return
 
     let interval
@@ -82,14 +82,15 @@ export default class MafiaOnlineAPIConnection {
       throw new MafiaOnlineAPIError('ERRTIMEOUT', 'Couldn\'t get a response from server within specified time. Adjust timeout argument to increase time or use _sendData method directly.')
     }, timeout * 1000)
 
-    await new Promise(resolve =>
-      interval = setInterval(() => this.data.length !== 0 && resolve, 10)
+    await new Promise<void>(resolve =>
+      interval = setInterval(() => this.data.length >= segmentsCount && resolve(), 10)
     )
 
-    const response = this.data.shift()
+    const segments = new Array(segmentsCount).fill(null).map(() => this.data.shift())
+
     const listenerCallback = this._listeners.shift()
 
-    listenerCallback(response)
+    listenerCallback(segments)
     if(this._listeners.length > 0) this._listen()
   }
 
@@ -97,16 +98,21 @@ export default class MafiaOnlineAPIConnection {
    * Wrapper around _sendData() and _listen()
    * @param data Object with data to send to server. Must be JSON-serializable.
    */
-  async _sendRequest(data: object = {}, skipAuthorizationCheck: boolean = false): Promise<object> {
+  async _sendRequest(data: object = {}, segmentsCount: number = 1, skipAuthorizationCheck: boolean = false): Promise<object | Array<object>> {
     await this._sendData(data, skipAuthorizationCheck)
-    const responseRaw = await this._addListenerToQueue()
-    let response
-    try {
-      response = JSON.parse(responseRaw)
-    } catch(e) {
-      console.error(responseRaw)
-      throw new MafiaOnlineAPIError('ERRRESPSYNTAX', 'Couldn\'t parse JSON response from server in TCP socket.')
+    const responseRawSegments = await this._addListenerToQueue(segmentsCount)
+    let responseSegments = []
+    for (let segment of responseRawSegments) {
+      let response
+      try {
+        response = JSON.parse(segment)
+      } catch(e) {
+        console.error(response)
+        console.log(e)
+        throw new MafiaOnlineAPIError('ERRRESPSYNTAX', 'Couldn\'t parse JSON response from server in TCP socket.')
+      }
+      responseSegments.push(response)
     }
-    return response
+    return responseSegments.length === 1 ? responseSegments[0] : responseSegments
   }
 }
