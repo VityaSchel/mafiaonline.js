@@ -1,12 +1,14 @@
-import { aggregation } from './utils.js'
+import { aggregation, MafiaOnlineAPIError } from './utils.js'
 import MafiaOnlineAPIAuth from './auth.js'
 import MafiaOnlineAPIChat from './chat.js'
 import MafiaOnlineAPIConnection from './connection.js'
 import * as net from 'net'
 
 export interface MafiaOnlineAPICredentials {
-  email: string;
-  password: string;
+  email?: string;
+  password?: string;
+  token?: string;
+  userID?: string;
 }
 
 export interface MafiaOnlineAPIClassDeclarations {
@@ -18,13 +20,25 @@ export interface MafiaOnlineAPIClassDeclarations {
   data: Array<string>
   _listeners: Array<Function>
   _clientSocket: net.Socket
-  _ready: boolean
+  _socketReady: boolean
+  _authorized: boolean
   logs: boolean
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
+  
   constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean = false) {
-    this.credentials = credentials
+    let tokenCredentials
+    if (credentials.token && credentials.userID){
+      tokenCredentials = true
+      this.credentials = { token: credentials.token, userID: credentials.userID }
+    } else if(credentials.email && credentials.password) {
+      tokenCredentials = false
+      this.credentials = { email: credentials.email, password: credentials.password }
+    } else {
+      throw new MafiaOnlineAPIError('ERRCOSTRUCTOR', 'Error while initializing class: credentials must be one of { token: string, userID: string } or { email: string, password: string }')
+    }
+
     this.logs = verboseLogs
     if(this.logs) console.log('To stop MafiaOnline.js from logging debug into console, pass false as second argument to constructor.')
 
@@ -36,11 +50,25 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
     this._listeners = []
 
     this._createConnection()
+      .then(() => {
+        if(tokenCredentials) {
+          this._signInWithToken(
+            this.credentials.token,
+            this.credentials.userID
+          )
+        } else {
+          this._signInWithEmail(
+            this.credentials.email,
+            this.credentials.password
+          )
+        }
+      })
   }
 
   logs: boolean
   _clientSocket: net.Socket
-  _ready: boolean
+  _socketReady: boolean
+  _authorized: boolean
   _listeners: Function[]
   credentials: MafiaOnlineAPICredentials
   account: object
@@ -57,7 +85,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
 export interface MafiaOnlineAPIBase extends 
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
-  MafiaOnlineAPIConnection 
+  MafiaOnlineAPIConnection
 { }
 
 function applyMixins(derivedCtor: any, constructors: any[]) {
@@ -68,13 +96,12 @@ function applyMixins(derivedCtor: any, constructors: any[]) {
         name,
         Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
         Object.create(null)
-      );
-    });
-  });
+      )
+    })
+  })
 }
 
 applyMixins(MafiaOnlineAPIBase, [
-  MafiaOnlineAPIBase,
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
   MafiaOnlineAPIConnection

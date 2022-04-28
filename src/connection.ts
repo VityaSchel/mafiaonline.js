@@ -4,7 +4,8 @@ import * as net from 'net'
 import { MafiaOnlineAPIError } from './utils.js'
 
 export default class MafiaOnlineAPIConnection {
-  _ready: boolean
+  _socketReady: boolean
+  _authorized: boolean
   _listeners: Function[]
   credentials: MafiaOnlineAPICredentials
   account: object
@@ -21,7 +22,7 @@ export default class MafiaOnlineAPIConnection {
     this._clientSocket.on('end', () => { throw new MafiaOnlineAPIError('ERRDISCONNECT', 'Socket disconnected') })
     await new Promise(resolve => this._clientSocket.on('connect', resolve))
     this.log('Connected to the TCP socket')
-    this._ready = true
+    this._socketReady = true
     this._createListener()
   }
 
@@ -46,10 +47,14 @@ export default class MafiaOnlineAPIConnection {
     })
   }
 
-  _sendData(data: object = {}) {
+  _sendData(data: object = {}, skipAuthorizationCheck: boolean = false) {
     return new Promise<void>(async (resolve, reject) => {
       await new Promise<void>(resolve => 
-        setInterval(() => this._ready && resolve(), 10)
+        setInterval(() => 
+          this._socketReady && 
+          (skipAuthorizationCheck || this._authorized) &&
+          resolve()
+        , 10)
       )
       this.log('Sent to server:', data)
       data['t'] = this.token
@@ -92,8 +97,8 @@ export default class MafiaOnlineAPIConnection {
    * Wrapper around _sendData() and _listen()
    * @param data Object with data to send to server. Must be JSON-serializable.
    */
-  async _sendRequest(data: object = {}): Promise<object> {
-    await this._sendData(data)
+  async _sendRequest(data: object = {}, skipAuthorizationCheck: boolean = false): Promise<object> {
+    await this._sendData(data, skipAuthorizationCheck)
     const responseRaw = await this._addListenerToQueue()
     let response
     try {
