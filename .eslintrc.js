@@ -33,6 +33,7 @@ module.exports = {
     'semi': [
       'error',
       'never'
-    ]
+    ],
+    'ts/2339'
   }
 }

@@ -1,4 +1,5 @@
-export const aggregation = (baseClass, ...mixins) => {
+// @ts-nocheck
+export const aggregation = (baseClass, ...mixins): any => {
   class base extends baseClass {
     constructor(...args) {
       super(...args)

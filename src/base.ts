@@ -54,16 +54,30 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   }
 }
 
-
 export interface MafiaOnlineAPIBase extends 
-  MafiaOnlineAPIAuth, 
+  MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
-  MafiaOnlineAPIConnection
+  MafiaOnlineAPIConnection 
 { }
 
-export default class MafiaOnlineAPI extends aggregation(
+function applyMixins(derivedCtor: any, constructors: any[]) {
+  constructors.forEach((baseCtor) => {
+    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
+      Object.defineProperty(
+        derivedCtor.prototype,
+        name,
+        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
+        Object.create(null)
+      );
+    });
+  });
+}
+
+applyMixins(MafiaOnlineAPIBase, [
   MafiaOnlineAPIBase,
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
   MafiaOnlineAPIConnection
-) { }
+])
+
+export default MafiaOnlineAPIBase

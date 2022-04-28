@@ -3,7 +3,7 @@ import * as consts from './constants.js'
 import * as net from 'net'
 import { MafiaOnlineAPIError } from './utils.js'
 
-export default class MafiaOnlineAPIChat {
+export default class MafiaOnlineAPIConnection {
   _ready: boolean
   _listeners: Function[]
   credentials: MafiaOnlineAPICredentials
@@ -31,32 +31,20 @@ export default class MafiaOnlineAPIChat {
       this.log('Received chunk of data. Size:', chunk.length)
 
       bufferChunks.push(chunk)
-
-      //this.log('Received response from server:', response)
-      // console.log(chunk[0])
+      const lastChunk = chunk[chunk.length - 1] == 0
+      if (lastChunk) {
+        const bufferData = Buffer.concat(bufferChunks)
+        let data = bufferData.toString('utf-8')
+        for (let str of data.trim().split(/[\u0000]/)) {
+          data = data.trim().slice(0, -1)
+          if(str !== 'p') {
+            this.data.push(data)
+            this.log('Received response from server:', data)
+          }
+        }
+      }
     })
   }
-
-    //создается отдельный поток (типа подпроцесса) для обработки данных с сокета
-    // беск. цикл начинается
-        // ввести переменную для инфы bufData (пустые байты)
-        // беск. цикл начинается
-            // получить из клиента сокета 2084 байта
-            // если количество полученных байт !== -1 то
-                // если байты[последний] === 0 (поток закончен)
-                    // [начать обработку данных]
-                // иначе
-                    // bufData += полученные из сокета байты
-
-
-
-    // начало обработки данных:
-    // bufData += полученные из сокета байты
-    // декодировать буффер и записать в переменную bufDataDecoded
-    // for(let str of d.trim().split(/[\u0000]/))
-        // str = str.trim().slice(0, -1)
-        // если str !== "p" то
-            // обработкаЗакончена(str)
 
   _sendData(data: object = {}) {
     return new Promise<void>(async (resolve, reject) => {
