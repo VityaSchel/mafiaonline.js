@@ -4,6 +4,11 @@ import { MafiaOnlineAPIError, hashPassword } from './utils.js'
 import * as consts from './constants'
 import MafiaUser from './constructors/user.js'
 
+/**
+ * @class Auth
+ * @memberof module:mafiaonline~Base
+ * @inner
+ */
 class MafiaOnlineAPIAuth {
   token: string
   id: number
@@ -25,9 +30,7 @@ class MafiaOnlineAPIAuth {
       pw: hashPassword(password)
     }, 1, true)
     return this._signInResult(response)
-  }
-
-  
+  }  
 
   /**
    * Sign in into account using token
@@ -76,6 +79,7 @@ class MafiaOnlineAPIAuth {
 
   /**
    * Sign out from account and delete session
+   * @memberof module:mafiaonline
    * @returns Response from REST API
    */
   async signOut() {

@@ -28,6 +28,11 @@ export interface MafiaOnlineAPIClassDeclarations {
   _closed: boolean
 }
 
+/**
+ * @class Base
+ * @memberof module:mafiaonline
+ * @inner
+ */
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean = false) {
     let tokenCredentials
@@ -47,7 +52,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
     this.account = null
     this.token = null
     this.id = null
-    this.deviceID = "0"
+    this.deviceID = '0'
     this.data = []
     this._listeners = []
 
@@ -130,4 +135,9 @@ applyMixins(MafiaOnlineAPIBase, [
   MafiaOnlineAPIAccount
 ])
 
+/**
+ * Mafia Online API
+ * @module mafiaonline
+ * @typicalname MafiaOnlineAPI
+ */
 export default MafiaOnlineAPIBase
