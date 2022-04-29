@@ -3,11 +3,6 @@ import MafiaOnlineAPIConnection from './connection.js'
 import { MafiaOnlineAPIError, hashPassword } from './utils.js'
 import MafiaUser from './constructors/user.js'
 
-/**
- * @class Auth
- * @memberof module:mafiaonline~Base
- * @inner
- */
 class MafiaOnlineAPIAuth {
   token: string
   id: number

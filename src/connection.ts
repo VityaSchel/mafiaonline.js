@@ -43,8 +43,6 @@ export default class MafiaOnlineAPIConnection {
   _processRequestResponse(callback) {
     let container = []
     return chunk => {
-      this.log('Received chunk of data. Size:', chunk.length)
-
       container.push(chunk)
       const lastChunk = chunk[chunk.length - 1] == 0
       if (lastChunk) {

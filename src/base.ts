@@ -6,6 +6,7 @@ import MafiaOnlineAPIAccount from './account.js'
 import MafiaOnlineAPIRooms from './rooms.js'
 import MafiaUser from './constructors/user.js'
 import * as net from 'net'
+import { nanoid } from 'nanoid'
 
 export interface MafiaOnlineAPICredentials {
   email?: string;
@@ -48,7 +49,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
     this.account = null
     this.token = null
     this.id = null
-    this.deviceID = '0'
+    this.deviceID = nanoid(12)
     this.data = []
     this._listeners = []
 

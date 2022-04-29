@@ -12,7 +12,7 @@ class MafiaRoom {
 
   /**
    * Get ID of room
-   * @memberof module:mafiaonline~MafiaRoom
+   * @memberof module:mafiaonline.MafiaRoom
    * @returns {number} ID of room
    */
   getID() {
@@ -21,7 +21,7 @@ class MafiaRoom {
 
   /**
    * Get room name
-   * @memberof module:mafiaonline~MafiaRoom
+   * @memberof module:mafiaonline.MafiaRoom
    * @returns {string} Name of room
    */
   getName() {
@@ -30,7 +30,7 @@ class MafiaRoom {
 
   /**
    * Get minimum level required to join the room
-   * @memberof module:mafiaonline~MafiaRoom
+   * @memberof module:mafiaonline.MafiaRoom
    * @returns {number} Minimum level for room
    */
   getMinimumLevel() {

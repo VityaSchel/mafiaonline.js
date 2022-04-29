@@ -1,22 +1,15 @@
 import MafiaOnlineAPIConnection from './connection.js'
 import User from './constructors/user.js'
 import { MafiaOnlineAPIError, banHandler } from './utils.js'
-
-interface ChatMessage {
-  isHistory: boolean
-  sender: User
-  text: string
-  sentTimestamp: number
-  raw: object
-}
+import ChatMessage from './constructors/chatMessage.js'
 
 class MafiaOnlineAPIChat {
   id: number
 
   /**
    * Subscribe to global public chat
-   * @param {function} callback Callback function, that gets called everytime a new message sent by someone in chat with message argument
    * @memberof module:mafiaonline
+   * @param {function} callback Callback function, that gets called everytime a new message sent by someone in chat with message argument. It is strongly recommended that you check msg.isHistory() before interacting with it, because when you join chat, server sends you a lot of history messages (that were sent before you joined).
    * @returns {function} Unsubscribe function
    */
   async joinGlobalChat(callback: (msg: ChatMessage) => void) {
@@ -54,14 +47,7 @@ class MafiaOnlineAPIChat {
       const messageIncoming = msg => {
         if (messageIDS.includes(msg.c)) return
         messageIDS.push(msg.c)
-        const message: ChatMessage = {
-          isHistory: msg['c'] <= subscriptionDate,
-          sender: msg['uu'] && new User(msg['uu']),
-          text: msg['tx'],
-          sentTimestamp: msg['c'],
-          raw: msg
-        }
-        callback(message)
+        callback(new ChatMessage(msg, subscriptionDate))
       }
 
       this._clientSocket.addListener('data', chatListener)

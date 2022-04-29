@@ -10,16 +10,16 @@ TypeScript supported!
 
 ## Features
 
-[x] TypeScript
-[x] JSDoc
-[x] Ban error handler
-[x] REST API: Sign up, email verification
-[x] Disconnection handler
-[x] Tested with Jest
-[x] Examples
-[x] Sign in with email/nickname&password or token&userid
-[x] Global chat subscription 
-[x] Rooms monitoring
+- [x] TypeScript
+- [x] JSDoc
+- [x] Ban error handler
+- [x] REST API: Sign up, email verification
+- [x] Disconnection handler
+- [x] Tested with Jest
+- [x] Examples
+- [x] Sign in with email/nickname&password or token&userid
+- [x] Global chat subscription 
+- [x] Rooms monitoring
 
 ## Install
 
@@ -43,6 +43,10 @@ See API reference at [docs/api-reference.md](./docs/api-reference.md)
 
 Examples can be found under [examples](./examples/) dir
 
+**If you want to make a global-chat bot, see [examples/examples.md#global-chat-bot](./examples.md#global-chat-bot)**
+
 ## Caveats
 
-- REST API is subject of rate limiting, which is not connected to TCP rate limiting. You should treat both servers are separate. In REST API, seconds left until rate limit unban is declared in "data" field. Methods of REST API are tagged with @see ## REST API in documentation.
+- REST API is subject of rate limiting, which is not connected to TCP rate limiting. You should treat both servers are separate. In REST API, seconds left until rate limit unban is declared in "data" field. Methods of REST API are tagged with `@see ## REST API` in JSDoc documentation
+- Bans are expanded on all accounts using same IP-address and deviceID
+- IP-addresses are collected and linked to account starting from sign up and each time you do any action

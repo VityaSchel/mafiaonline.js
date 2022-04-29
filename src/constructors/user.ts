@@ -13,7 +13,7 @@ class MafiaUser {
 
   /**
    * Get in-game ID of user
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {number} User ID
    */
   getID(): number {
@@ -22,7 +22,7 @@ class MafiaUser {
   
   /**
    * Get user nickname
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {string} User nickname
    */
   getName(): string {
@@ -31,7 +31,7 @@ class MafiaUser {
 
   /**
    * Get user experience
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {number} User experience
    */
   getExperience(): number {
@@ -40,7 +40,7 @@ class MafiaUser {
 
   /**
    * Get user last date of online
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {Date} Date of online
    */
   getLastOnlineDate(): Date {
@@ -49,7 +49,7 @@ class MafiaUser {
 
   /**
    * Get user level
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {number} User level
    */
   getLevel(): number {
@@ -58,7 +58,7 @@ class MafiaUser {
 
   /**
    * Get user reputation
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {number} User reputation
    */
   getReputation(): number {
@@ -67,7 +67,7 @@ class MafiaUser {
 
   /**
    * Get information about played games
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {object} Object with stats
    */
   getPlayedGames(): object {
@@ -94,7 +94,7 @@ class MafiaUser {
 
   /**
    * Get language of user
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {string} User locale
    */
   getLocale(): string {
@@ -103,7 +103,7 @@ class MafiaUser {
 
   /**
    * Check if user sex is male
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {boolean} True if user is male, false otherwise
    */
   isMale(): boolean {
@@ -112,7 +112,7 @@ class MafiaUser {
 
   /**
    * Check if user sex is female
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {boolean} True if user is female, false otherwise
    */
   isFemale(): boolean {
@@ -121,7 +121,7 @@ class MafiaUser {
 
   /**
    * Get user sex
-   * @memberof module:mafiaonline~MafiaUser
+   * @memberof module:mafiaonline.MafiaUser
    * @returns {number} 0 if user is male, 0 if user is female
    */
   getSex(): number {
