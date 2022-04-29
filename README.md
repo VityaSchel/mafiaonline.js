@@ -25,3 +25,7 @@ const mafiaOnlineAPI = new MafiaOnlineAPI({ email: 'test@example.com', password:
 ## Documentation
 
 See API reference at [docs/api-reference.md]
+
+## Caveats
+
+- REST API is subject of rate limiting, which is not connected to TCP rate limiting. You should treat both servers are separate. In REST API, seconds left until rate limit unban is declared in "data" field. Methods of REST API are tagged with @see ## REST API in documentation.

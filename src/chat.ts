@@ -2,7 +2,7 @@ import MafiaOnlineAPIConnection from './connection.js'
 import User from './constructors/user.js'
 
 interface ChatMessage {
-  /** @property {boolean} isHistory */ isHistory: boolean
+  isHistory: boolean
   sender: User
   text: string
   sentTimestamp: number

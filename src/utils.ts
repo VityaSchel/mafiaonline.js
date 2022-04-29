@@ -12,7 +12,7 @@ export const aggregation = (baseClass, ...mixins): any => {
       })
     }
   }
-  let copyProps = (target, source) => {  // this function copies all properties and symbols, filtering out some special ones
+  const copyProps = (target, source) => {  // this function copies all properties and symbols, filtering out some special ones
     Object.getOwnPropertyNames(source)
       .concat(Object.getOwnPropertySymbols(source))
       .forEach((prop) => {
@@ -41,8 +41,16 @@ export function hashPassword(password: string): string {
 }
 
 
-
-export async function signUp(/*nickname: string, */email: string, password: string, language: string = 'RUS', deviceID: string = '0') {
+/**
+ * Create new account
+ * @see {@link ## REST API}
+ * @param {string} email Email, can be temp mail
+ * @param {string} password Password in clear text
+ * @param {string} language Language of account, possible values are 'RUS' or 'ENG'
+ * @param {string} deviceID Device ID of Android, can be any random string
+ * @returns {object} Response from REST API
+ */
+export async function signUp(/*nickname: string, */email: string, password: string, language = 'RUS', deviceID = '0') {
   const response = await fetch(`http://${consts.host}:${consts.ports.restAPI}/user/sign_up`, {
     method: 'POST',
     body: new URLSearchParams({

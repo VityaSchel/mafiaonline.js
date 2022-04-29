@@ -1,7 +1,7 @@
 /**
  * @class MafiaUser
  * @classdesc User of Mafia Online
- * @memberof module:mafiaonline
+ * @memberof module:mafiaonline~MafiaUser
  */
 class MafiaUser {
   data: any
@@ -13,7 +13,8 @@ class MafiaUser {
 
   /**
    * Get in-game ID of user
-   * @returns User ID
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {number} User ID
    */
   getID(): number {
     return this.data.o
@@ -21,7 +22,8 @@ class MafiaUser {
   
   /**
    * Get user nickname
-   * @returns User nickname
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {string} User nickname
    */
   getName(): string {
     return this.data.u
@@ -29,7 +31,8 @@ class MafiaUser {
 
   /**
    * Get user experience
-   * @returns User experience
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {number} User experience
    */
   getExperience(): number {
     return this.data.ex
@@ -37,7 +40,8 @@ class MafiaUser {
 
   /**
    * Get user last date of online
-   * @returns Date of online
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {Date} Date of online
    */
   getLastOnlineDate(): Date {
     return new Date(this.date)
@@ -45,7 +49,8 @@ class MafiaUser {
 
   /**
    * Get user level
-   * @returns User level
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {number} User level
    */
   getLevel(): number {
     return this.data.l
@@ -53,7 +58,8 @@ class MafiaUser {
 
   /**
    * Get user reputation
-   * @returns User reputation
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {number} User reputation
    */
   getReputation(): number {
     return this.data.a
@@ -61,7 +67,8 @@ class MafiaUser {
 
   /**
    * Get information about played games
-   * @returns Object with stats
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {object} Object with stats
    */
   getPlayedGames(): object {
     return {
@@ -87,7 +94,8 @@ class MafiaUser {
 
   /**
    * Get language of user
-   * @returns User locale
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {string} User locale
    */
   getLocale(): string {
     return this.data.slc
@@ -95,7 +103,8 @@ class MafiaUser {
 
   /**
    * Check if user sex is male
-   * @returns True if user is male, false otherwise
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {boolean} True if user is male, false otherwise
    */
   isMale(): boolean {
     return this.data.s === 0
@@ -103,7 +112,8 @@ class MafiaUser {
 
   /**
    * Check if user sex is female
-   * @returns True if user is female, false otherwise
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {boolean} True if user is female, false otherwise
    */
   isFemale(): boolean {
     return this.data.s === 1
@@ -111,7 +121,8 @@ class MafiaUser {
 
   /**
    * Get user sex
-   * @returns 0 if user is male, 0 if user is female
+   * @memberof module:mafiaonline~MafiaUser
+   * @returns {number} 0 if user is male, 0 if user is female
    */
   getSex(): number {
     return this.data.s

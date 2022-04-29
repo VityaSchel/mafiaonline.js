@@ -79,6 +79,7 @@ class MafiaOnlineAPIAuth {
   /**
    * Sign out from account and delete session
    * @memberof module:mafiaonline
+   * @see {@link ## REST API}
    * @returns {Promise<object>} Response from REST API
    */
   async signOut(): Promise<object> {
@@ -88,6 +89,7 @@ class MafiaOnlineAPIAuth {
   /**
    * Send verification email
    * @memberof module:mafiaonline
+   * @see {@link ## REST API}
    * @returns {Promise<object>} Response from REST API
    */
   async verifyEmail(): Promise<object> {

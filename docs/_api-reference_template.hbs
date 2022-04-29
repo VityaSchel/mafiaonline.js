@@ -7,3 +7,18 @@
 {{>members~}}
 {{/module}}
 
+## Interfaces
+
+```typescript
+interface ChatMessage {
+  isHistory: boolean
+  sender: User
+  text: string
+  sentTimestamp: number
+  raw: object
+}
+```
+
+## REST API
+
+This method uses HTTP REST API.
