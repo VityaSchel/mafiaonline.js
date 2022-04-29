@@ -83,7 +83,7 @@ class MafiaOnlineAPIAuth {
   }
 
   /**
-   * Verify user email
+   * Send verification email
    * @returns Response from REST API
    */
   async verifyEmail(){

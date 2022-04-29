@@ -21,3 +21,7 @@ import MafiaOnlineAPI from 'mafiaonline.js'
 
 const mafiaOnlineAPI = new MafiaOnlineAPI({ email: 'test@example.com', password: 'pythonsucks228' })
 ```
+
+## Documentation
+
+See API reference at [docs/api-reference.md]
