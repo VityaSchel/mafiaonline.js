@@ -69,6 +69,7 @@ class MafiaOnlineAPIAuth {
         this.token = response['uu']['t']
         this.id = response['uu']['o']
         this._authorized = true
+        this.log('Logged in as', this.account.getName())
         return this.account
 
       default:

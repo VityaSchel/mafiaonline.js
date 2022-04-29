@@ -1,5 +1,6 @@
 import MafiaOnlineAPIConnection from './connection.js'
 import User from './constructors/user.js'
+import { MafiaOnlineAPIError, banHandler } from './utils.js'
 
 interface ChatMessage {
   isHistory: boolean
@@ -19,22 +20,15 @@ class MafiaOnlineAPIChat {
    * @returns {function} Unsubscribe function
    */
   async joinGlobalChat(callback: (msg: ChatMessage) => void) {
-    await new Promise<void>(resolve =>
-      setInterval(() =>
-        this._socketReady &&
-        this._authorized &&
-        resolve()
-      , 10)
-    )
+    await this._waitForReadyState()
 
-    let timeout, unsubscribe, chatListener
+    let chatListener
     const messageIDS = [], subscriptionDate = Date.now()
     const subscribeToPublicChat = () => {
       this._clientSocket.removeListener('data', this._defaultSocketResponseListener)
       this.log('Subscribed to public chat')
 
-      const bufferChunks = []
-      chatListener = this._processRequestResponse(bufferChunks, response => {
+      chatListener = this._processRequestResponse(response => {
         const messages = JSON.parse(response)
         switch (messages.ty) {
           case 'u':
@@ -47,6 +41,13 @@ class MafiaOnlineAPIChat {
           case 'ms':
             messages.ms.forEach(messageIncoming)
             break
+
+          case 'ublk':
+            banHandler(messages)
+            break
+
+          default:
+            break
         }
       })
 
@@ -55,7 +56,7 @@ class MafiaOnlineAPIChat {
         messageIDS.push(msg.c)
         const message: ChatMessage = {
           isHistory: msg['c'] <= subscriptionDate,
-          sender: new User(msg['uu']),
+          sender: msg['uu'] && new User(msg['uu']),
           text: msg['tx'],
           sentTimestamp: msg['c'],
           raw: msg
@@ -68,8 +69,6 @@ class MafiaOnlineAPIChat {
     }
     subscribeToPublicChat()
     return () => {
-      clearInterval(timeout)
-      unsubscribe()
       this._sendRequest({ ty: 'acd' }, 2)
       this._clientSocket.removeListener('data', chatListener)
       this._clientSocket.addListener('data', this._defaultSocketResponseListener)

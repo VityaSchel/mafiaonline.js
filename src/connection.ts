@@ -1,15 +1,16 @@
 import { MafiaOnlineAPICredentials } from './base.js'
+import MafiaUser from './constructors/user.js'
 import fetch from 'node-fetch'
 import * as consts from './constants.js'
 import * as net from 'net'
-import { MafiaOnlineAPIError } from './utils.js'
+import { MafiaOnlineAPIError, banHandler } from './utils.js'
 
 export default class MafiaOnlineAPIConnection {
   _socketReady: boolean
   _authorized: boolean
   _listeners: Function[]
   credentials: MafiaOnlineAPICredentials
-  account: object
+  account: MafiaUser
   token: string
   id: number
   deviceID: string
@@ -32,15 +33,15 @@ export default class MafiaOnlineAPIConnection {
   }
 
   _createListener() {
-    const bufferChunks = []
-    this._defaultSocketResponseListener = this._processRequestResponse(bufferChunks, resultStr => {
+    this._defaultSocketResponseListener = this._processRequestResponse(resultStr => {
       this.data.push(resultStr)
       this.log('Received response from server:', resultStr)
     })
     this._clientSocket.addListener('data', this._defaultSocketResponseListener)
   }
 
-  _processRequestResponse(container, callback) {
+  _processRequestResponse(callback) {
+    let container = []
     return chunk => {
       this.log('Received chunk of data. Size:', chunk.length)
 
@@ -48,10 +49,18 @@ export default class MafiaOnlineAPIConnection {
       const lastChunk = chunk[chunk.length - 1] == 0
       if (lastChunk) {
         const bufferData = Buffer.concat(container)
-        let data = bufferData.toString('utf-8')
+        const data = bufferData.toString('utf-8')
+        container = []
         for (let str of data.trim().split(/\u0000/)) {
           const resultStr = str.trim()//.slice(0, -1)
           if (resultStr.length > 0 && resultStr !== 'p') {
+            let isBanned
+            try {
+              const response = JSON.parse(resultStr)
+              if (response['ty'] === 'ublk') isBanned = true
+            } catch(e) {/**/}
+            if (isBanned) banHandler(JSON.parse(resultStr))
+
             callback(resultStr)
           }
         }
@@ -59,15 +68,9 @@ export default class MafiaOnlineAPIConnection {
     }
   }
 
-  _sendData(data: object = {}, skipAuthorizationCheck: boolean = false) {
+  _sendData(data: object = {}, skipAuthorizationCheck = false) {
     return new Promise<void>(async (resolve, reject) => {
-      await new Promise<void>(resolve => 
-        setInterval(() => 
-          this._socketReady && 
-          (skipAuthorizationCheck || this._authorized) &&
-          resolve()
-        , 10)
-      )
+      await this._waitForReadyState(skipAuthorizationCheck)
       data['t'] = this.token
       data['uo'] ??= this.id
       this.log('Sent to server:', data)
@@ -78,14 +81,14 @@ export default class MafiaOnlineAPIConnection {
     })
   }
   
-  _addListenerToQueue(segmentsCount: number = 1): Promise<Array<string>> {
+  _addListenerToQueue(segmentsCount = 1): Promise<Array<string>> {
     return new Promise(resolve => {
       this._listeners.push(resolve)
       this._listen(segmentsCount)
     })
   }
 
-  async _listen(segmentsCount: number = 1, timeout: number|void = 15): Promise<Array<string>> {
+  async _listen(segmentsCount = 1, timeout: number|void = 15): Promise<Array<string>> {
     if(this._listeners.length !== 1) return
 
     let interval, timeoutInterval
@@ -113,11 +116,13 @@ export default class MafiaOnlineAPIConnection {
   /**
    * Wrapper around _sendData() and _listen()
    * @param data Object with data to send to server. Must be JSON-serializable.
+   * @param {number} segmentsCount Number of segments that should be received from server
+   * @param {boolean} skipAuthorizationCheck Skip awaiting for authorization
    */
-  async _sendRequest(data: object = {}, segmentsCount: number = 1, skipAuthorizationCheck: boolean = false): Promise<object | Array<object>> {
+  async _sendRequest(data: object = {}, segmentsCount = 1, skipAuthorizationCheck = false): Promise<object | Array<object>> {
     await this._sendData(data, skipAuthorizationCheck)
     const responseRawSegments = await this._addListenerToQueue(segmentsCount)
-    let responseSegments = []
+    const responseSegments = []
     for (let segment of responseRawSegments) {
       let response
       try {
@@ -136,14 +141,8 @@ export default class MafiaOnlineAPIConnection {
     return Buffer.from(`${this.id}=:=${this.token}`).toString('base64')
   }
 
-  async _fetchRest(endpoint: string, body: object, authorizatonHeader: boolean = true): Promise<object> {
-    await new Promise<void>(resolve =>
-      setInterval(() =>
-        this._socketReady &&
-        (!authorizatonHeader || this._authorized) &&
-        resolve()
-      , 10)
-    )
+  async _fetchRest(endpoint: string, body: object, authorizatonHeader = true): Promise<object> {
+    await this._waitForReadyState(!authorizatonHeader)
     const response = await fetch(`http://${consts.host}:${consts.ports.restAPI}/${endpoint}`, {
       method: 'POST',
       body: new URLSearchParams(<URLSearchParams>body),
@@ -155,5 +154,17 @@ export default class MafiaOnlineAPIConnection {
     })
     const parsedResponse = await response.json()
     return <object>parsedResponse
+  }
+
+  async _waitForReadyState(skipAuthorization = false) {
+    let interval
+    await new Promise<void>(resolve =>
+      interval = setInterval(() =>
+        this._socketReady &&
+        (skipAuthorization || this._authorized) &&
+        resolve()
+      , 10)
+    )
+    clearInterval(interval)
   }
 }

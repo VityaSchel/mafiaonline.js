@@ -40,7 +40,6 @@ export function hashPassword(password: string): string {
   return password
 }
 
-
 /**
  * Create new account
  * @see {@link ## REST API}
@@ -55,11 +54,15 @@ export async function signUp(/*nickname: string, */email: string, password: stri
     method: 'POST',
     body: new URLSearchParams({
       email: email,
-      // username: nickname,
+      username: email,
       password: hashPassword(password),
       deviceId: deviceID,
       lang: language
     })
   })
   return await response.json()
+}
+
+export function banHandler(response) {
+  throw new MafiaOnlineAPIError('ERRBAN', 'You have been banned. Reason: ' + response['r'] + '. Seconds remaining: ' + response['tsr'])
 }

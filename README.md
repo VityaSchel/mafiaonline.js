@@ -8,6 +8,19 @@ This library is heavily based on work of [@Zakovskiy](https://github.com/Zakovsk
 
 TypeScript supported!
 
+## Features
+
+[x] TypeScript
+[x] JSDoc
+[x] Ban error handler
+[x] REST API: Sign up, email verification
+[x] Disconnection handler
+[x] Tested with Jest
+[x] Examples
+[x] Sign in with email/nickname&password or token&userid
+[x] Global chat subscription 
+[x] Rooms monitoring
+
 ## Install
 
 ```
@@ -24,7 +37,11 @@ const mafiaOnlineAPI = new MafiaOnlineAPI({ email: 'test@example.com', password:
 
 ## Documentation
 
-See API reference at [docs/api-reference.md]
+See API reference at [docs/api-reference.md](./docs/api-reference.md)
+
+## Examples
+
+Examples can be found under [examples](./examples/) dir
 
 ## Caveats
 

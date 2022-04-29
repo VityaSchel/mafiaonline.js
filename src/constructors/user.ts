@@ -1,7 +1,7 @@
 /**
  * @class MafiaUser
  * @classdesc User of Mafia Online
- * @memberof module:mafiaonline~MafiaUser
+ * @memberof module:mafiaonline
  */
 class MafiaUser {
   data: any

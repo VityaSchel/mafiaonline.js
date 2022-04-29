@@ -3,6 +3,7 @@ import MafiaOnlineAPIAuth from './auth.js'
 import MafiaOnlineAPIChat from './chat.js'
 import MafiaOnlineAPIConnection from './connection.js'
 import MafiaOnlineAPIAccount from './account.js'
+import MafiaOnlineAPIRooms from './rooms.js'
 import MafiaUser from './constructors/user.js'
 import * as net from 'net'
 
@@ -92,11 +93,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   async close(): Promise<void> {
     return new Promise<void>(async resolve => {
       if(!this._socketReady) {
-        await new Promise<void>(resolve =>
-          setInterval(() =>
-            this._socketReady && resolve()
-          , 10)
-        )
+        await this._waitForReadyState(true)
       }
 
       this._clientSocket['__closedGracefully'] = true
@@ -109,7 +106,8 @@ export interface MafiaOnlineAPIBase extends
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
   MafiaOnlineAPIConnection,
-  MafiaOnlineAPIAccount
+  MafiaOnlineAPIAccount,
+  MafiaOnlineAPIRooms
 { }
 
 function applyMixins(derivedCtor: any, constructors: any[]) {
@@ -129,7 +127,8 @@ applyMixins(MafiaOnlineAPIBase, [
   MafiaOnlineAPIAuth,
   MafiaOnlineAPIChat,
   MafiaOnlineAPIConnection,
-  MafiaOnlineAPIAccount
+  MafiaOnlineAPIAccount,
+  MafiaOnlineAPIRooms
 ])
 
 /**

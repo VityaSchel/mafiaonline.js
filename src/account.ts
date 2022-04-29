@@ -10,6 +10,7 @@ class MafiaOnlineAPIAccount {
   /**
    * Get authorized User
    * @memberof module:mafiaonline
+   * @memberof module:mafiaonline
    * @returns {Promise<MafiaUser>} Instance of User class
    */
   async getUser(): Promise<MafiaUser> {
@@ -44,6 +45,20 @@ class MafiaOnlineAPIAccount {
       default:
         throw new MafiaOnlineAPIError('ERRNICKSET', 'Error while setting nickname: ' + JSON.stringify(response))
     }
+  }
+
+  /**
+   * Set server language. Mustn't change frequently (once in 6 hours)
+   * @param {string} locale One of 'ru', 'en'
+   * @memberof module:mafiaonline
+   * @returns {object} Response from server, like this: {"ty":"slc","slc":"ru"}
+   */
+  async setLocale(locale: 'ru' | 'en') {
+    if(!['ru', 'en'].includes(locale)) throw new MafiaOnlineAPIError('ERRLOCALEINCORRECT', 'Locale must be one of \'ru\', \'en\'')
+    return await this._sendRequest({
+      type: 'usls',
+      slc: locale
+    })
   }
 }
 
