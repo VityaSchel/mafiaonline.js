@@ -1,4 +1,8 @@
 // @ts-nocheck
+import md5 from 'md5'
+import fetch from 'node-fetch'
+import * as consts from './constants.js'
+
 export const aggregation = (baseClass, ...mixins): any => {
   class base extends baseClass {
     constructor(...args) {
@@ -28,4 +32,26 @@ export class MafiaOnlineAPIError extends Error {
     super(message)
     this.code = code
   }
+}
+
+export function hashPassword(password: string): string {
+  for (let i = 0; i < 5; i++)
+    password = md5(password + 'azxsw')
+  return password
+}
+
+
+
+export async function signUp(nickname: string, email: string, password: string, language: string = 'RUS', deviceID: string = '0') {
+  const response = await fetch(`http://${consts.host}:${consts.ports.restAPI}/user/sign_up`, {
+    method: 'POST',
+    body: new URLSearchParams({
+      email: email,
+      username: nickname,
+      password: hashPassword(password),
+      deviceId: deviceID,
+      lang: language
+    })
+  })
+  return await response.json()
 }

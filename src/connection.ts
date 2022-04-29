@@ -3,7 +3,6 @@ import fetch from 'node-fetch'
 import * as consts from './constants.js'
 import * as net from 'net'
 import { MafiaOnlineAPIError } from './utils.js'
-import { URLSearchParams } from 'url'
 
 export default class MafiaOnlineAPIConnection {
   _socketReady: boolean
@@ -138,6 +137,13 @@ export default class MafiaOnlineAPIConnection {
   }
 
   async _fetchRest(endpoint: string, body: object, authorizatonHeader: boolean = true): Promise<object> {
+    await new Promise<void>(resolve =>
+      setInterval(() =>
+        this._socketReady &&
+        (!authorizatonHeader || this._authorized) &&
+        resolve()
+      , 10)
+    )
     const response = await fetch(`http://${consts.host}:${consts.ports.restAPI}/${endpoint}`, {
       method: 'POST',
       body: new URLSearchParams(<URLSearchParams>body),
@@ -150,30 +156,4 @@ export default class MafiaOnlineAPIConnection {
     const parsedResponse = await response.json()
     return <object>parsedResponse
   }
-
-  // subscribeToAPI(client, writeabledata, callback) {
-  //   if (!client) { return }
-  //   client.response = data => {
-  //     data = data?.toString()
-  //     let chunk = data?.split && data.split(/\0/g)[0]
-  //     chunk = chunk.replace(/^,{/, '{')
-  //     if (!chunk) { return }
-  //     let chunker = new JSONSplitStream()
-  //     chunker.write(chunk)
-  //     let chunkData
-  //     while (chunkData = chunker.read()) {
-  //       let parsed
-  //       try {
-  //         parsed = JSON5.parse(chunkData.replace(/\0/g, ''))
-  //         callback(parsed)
-  //       } catch (e) {
-  //         console.error('Could not parse server response: ', e, chunkData)
-  //       }
-  //     }
-  //   }
-  //   client.write(writeabledata + '\n')
-  //   return () => {
-  //     client.response = () => { }
-  //   }
-  // }
 }

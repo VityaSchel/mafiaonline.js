@@ -1,7 +1,7 @@
 import { MafiaOnlineAPICredentials, MafiaOnlineAPIClassDeclarations } from './base.js'
 import MafiaOnlineAPIConnection from './connection.js'
-import { MafiaOnlineAPIError } from './utils.js'
-import md5 from 'md5'
+import { MafiaOnlineAPIError, hashPassword } from './utils.js'
+import * as consts from './constants'
 import MafiaUser from './constructors/user.js'
 
 class MafiaOnlineAPIAuth {
@@ -22,16 +22,12 @@ class MafiaOnlineAPIAuth {
       d: this.deviceID,
       ty: 'sin',
       e: email,
-      pw: this._hashPassword(password)
+      pw: hashPassword(password)
     }, 1, true)
     return this._signInResult(response)
   }
 
-  _hashPassword(password: string): string {
-    for (let i = 0; i < 5; i++)
-      password = md5(password + 'azxsw')
-    return password
-  }
+  
 
   /**
    * Sign in into account using token
@@ -59,6 +55,9 @@ class MafiaOnlineAPIAuth {
           case -3:
             throw new MafiaOnlineAPIError('ERRLOGINPASSWORDINCORRECT', 'Couldn\'t sign in into the account: Password incorrect')
 
+          case -4:
+            throw new MafiaOnlineAPIError('ERRLOGINTOKENINCORRECT', 'Couldn\'t sign in into the account: Token incorrect')
+
           default:
             throw new MafiaOnlineAPIError('ERRLOGIN', 'Couldn\'t sign in into the account')
         }
@@ -83,14 +82,14 @@ class MafiaOnlineAPIAuth {
     return await this._fetchRest('user/sign_out', {})
   }
 
-  static async signUp(nickname: string, email: string, password: string, language: string = 'RUS') {
-    this._fetchRest('user/sign_up', {
-      email: email,
-      username: nickname,
-      password: this._hashPassword(password),
-      deviceId: this.deviceID,
-      lang: language
-    }, false)
+  /**
+   * Verify user email
+   * @returns Response from REST API
+   */
+  async verifyEmail(){
+    return await this._fetchRest('user/email/verify', {
+      lang: 'RUS'
+    })
   }
 }
 
