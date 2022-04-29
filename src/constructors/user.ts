@@ -6,31 +6,59 @@ class MafiaUser {
     this.data = data
   }
 
-  getID() {
+  /**
+   * Get in-game ID of user
+   * @returns User ID
+   */
+  getID(): number {
     return this.data.o
   }
   
-  getName() {
+  /**
+   * Get user nickname
+   * @returns User nickname
+   */
+  getName(): string {
     return this.data.u
   }
 
-  getExperience() {
+  /**
+   * Get user experience
+   * @returns User experience
+   */
+  getExperience(): number {
     return this.data.ex
   }
 
-  getLastOnlineDate() {
+  /**
+   * Get user last date of online
+   * @returns Date of online
+   */
+  getLastOnlineDate(): Date {
     return new Date(this.date)
   }
 
-  getLevel() {
+  /**
+   * Get user level
+   * @returns User level
+   */
+  getLevel(): number {
     return this.data.l
   }
 
-  getReputation() {
+  /**
+   * Get user reputation
+   * @returns User reputation
+   */
+  getReputation(): number {
     return this.data.a
   }
 
-  getPlayedGames() {
+  /**
+   * Get information about played games
+   * @returns Object with stats
+   */
+  getPlayedGames(): object {
     return {
       overall: this.data.pg,
       won: {
@@ -52,19 +80,35 @@ class MafiaUser {
     }
   }
 
-  getLocale() {
+  /**
+   * Get language of user
+   * @returns User locale
+   */
+  getLocale(): string {
     return this.data.slc
   }
 
-  isMale() {
+  /**
+   * Check if user sex is male
+   * @returns True if user is male, false otherwise
+   */
+  isMale(): boolean {
     return this.data.s === 0
   }
 
-  isFemale() {
+  /**
+   * Check if user sex is female
+   * @returns True if user is female, false otherwise
+   */
+  isFemale(): boolean {
     return this.data.s === 1
   }
 
-  getSex() {
+  /**
+   * Get user sex
+   * @returns 0 if user is male, 0 if user is female
+   */
+  getSex(): number {
     return this.data.s
   }
 }
