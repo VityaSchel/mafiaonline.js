@@ -6,6 +6,7 @@ module.exports = {
   },
   'extends': [
     'eslint:recommended',
+    'plugin:jest/recommended',
     'plugin:@typescript-eslint/recommended'
   ],
   'parser': '@typescript-eslint/parser',
@@ -33,7 +34,6 @@ module.exports = {
     'semi': [
       'error',
       'never'
-    ],
-    'ts/2339'
+    ]
   }
 }
