@@ -1,19 +1,24 @@
 import MafiaOnlineAPIConnection from './connection.js'
-import MafiaOnlineAPIAccount from './account'
 import User from './constructors/user.js'
 
 interface ChatMessage {
-  isHistory: boolean,
-  sender: User,
-  text: string,
-  sentTimestamp: number,
+  /** @property {boolean} isHistory */ isHistory: boolean
+  sender: User
+  text: string
+  sentTimestamp: number
   raw: object
 }
 
 class MafiaOnlineAPIChat {
   id: number
 
-  async subscribeToChat(callback: (msg: ChatMessage) => void) {
+  /**
+   * Subscribe to global public chat
+   * @param {function} callback Callback function, that gets called everytime a new message sent by someone in chat with message argument
+   * @memberof module:mafiaonline
+   * @returns {function} Unsubscribe function
+   */
+  async joinGlobalChat(callback: (msg: ChatMessage) => void) {
     await new Promise<void>(resolve =>
       setInterval(() =>
         this._socketReady &&
@@ -60,30 +65,8 @@ class MafiaOnlineAPIChat {
 
       this._clientSocket.addListener('data', chatListener)
       this._sendData({ ty: 'acc' })
-      // unsubscribe = subscribeToAPI(this.client, request, messages => {
-      //   switch (messages.ty) {
-      //     case 'u':
-      //       return
-
-      //     case 'm':
-      //       callback(messages.m)
-      //       break
-
-      //     case 'ms':
-      //       messages.ms.forEach(callback)
-      //       break
-      //   }
-
-      //   setAPItimeout()
-      // })
-      // const setAPItimeout = () => {
-      //   clearInterval(timeout)
-      //   timeout = setInterval(() => { unsubscribe(); subscribeToPublicChat() }, 6500)
-      // }
-      // setAPItimeout()
     }
     subscribeToPublicChat()
-    // let client = { client: this.client }
     return () => {
       clearInterval(timeout)
       unsubscribe()
@@ -95,11 +78,12 @@ class MafiaOnlineAPIChat {
 
   /**
    * Send message to global chat. Must join global chat first using joinGlobalChat(). Must verify email in order to be able to send more than one message.
-   * @param content Text content of message
-   * @param messageStyle Style of message (VIP-only)
+   * @memberof module:mafiaonline
+   * @param {string} content Text content of message
+   * @param {number} messageStyle Style of message (VIP-only)
    */
   async sendToGlobalChat(content: string, messageStyle = 0) {
-    return await this._sendData({
+    await this._sendData({
       ty: 'cmc',
       m: {
         tx: content,

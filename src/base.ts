@@ -28,11 +28,6 @@ export interface MafiaOnlineAPIClassDeclarations {
   _closed: boolean
 }
 
-/**
- * @class Base
- * @memberof module:mafiaonline
- * @inner
- */
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean = false) {
     let tokenCredentials
@@ -91,8 +86,10 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
 
   /**
    * Closes current socket and cleans up all stuff. Does not delete session, use signOut() before close()!
+   * @memberof module:mafiaonline
+   * @returns {Promise}
    */
-  close(): Promise<void> {
+  async close(): Promise<void> {
     return new Promise<void>(async resolve => {
       if(!this._socketReady) {
         await new Promise<void>(resolve =>

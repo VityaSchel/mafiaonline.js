@@ -1,7 +1,6 @@
 import { MafiaOnlineAPICredentials, MafiaOnlineAPIClassDeclarations } from './base.js'
 import MafiaOnlineAPIConnection from './connection.js'
 import { MafiaOnlineAPIError, hashPassword } from './utils.js'
-import * as consts from './constants'
 import MafiaUser from './constructors/user.js'
 
 /**
@@ -80,17 +79,18 @@ class MafiaOnlineAPIAuth {
   /**
    * Sign out from account and delete session
    * @memberof module:mafiaonline
-   * @returns Response from REST API
+   * @returns {Promise<object>} Response from REST API
    */
-  async signOut() {
+  async signOut(): Promise<object> {
     return await this._fetchRest('user/sign_out', {})
   }
 
   /**
    * Send verification email
-   * @returns Response from REST API
+   * @memberof module:mafiaonline
+   * @returns {Promise<object>} Response from REST API
    */
-  async verifyEmail(){
+  async verifyEmail(): Promise<object> {
     return await this._fetchRest('user/email/verify', {
       lang: 'RUS'
     })

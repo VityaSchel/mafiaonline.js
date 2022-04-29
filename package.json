@@ -8,7 +8,7 @@
     "build": "tsc",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js -i test/jest.test.js --runInBand",
     "prepare": "npm run build",
-    "docs": "jsdoc2md -c jsdoc.json -t docs/_api-reference_template.hbs --files src/**.ts > docs/api-reference.md"
+    "docs": "jsdoc2md -c jsdoc.json -t docs/_api-reference_template.hbs --files src/**.ts src/**/*.ts > docs/api-reference.md"
   },
   "directories": {
     "example": "examples"

@@ -9,16 +9,23 @@ class MafiaOnlineAPIAccount {
 
   /**
    * Get authorized User
-   * @returns Instance of User class
+   * @memberof module:mafiaonline
+   * @returns {Promise<MafiaUser>} Instance of User class
    */
-  async getUser() {
+  async getUser(): Promise<MafiaUser> {
     const user = await this._sendRequest({ ty: 'acd' }, 2)
     this.account = new MafiaUser(user[0]['uu'])
     return this.account
   }
 
-  async setNickname(nickname) {
-    if (!nickname.test(/^[a-zA-Zа-яА-Я0-9 ]+$/)) throw new MafiaOnlineAPIError('ERRNICKSETCHARS', 'Nickname must be [a-zA-Zа-яА-Я0-9 ]')
+  /**
+   * Set nickname of authorized user
+   * @param {string} nickname New nickname of user
+   * @memberof module:mafiaonline
+   * @returns {Promise<boolean>} True if nickname set successfully
+   */
+  async setNickname(nickname: string): Promise<boolean> {
+    if (!/^[a-zA-Zа-яА-Я0-9 ]+$/.test(nickname)) throw new MafiaOnlineAPIError('ERRNICKSETCHARS', 'Nickname must be [a-zA-Zа-яА-Я0-9 ]')
 
     const response = await this._sendRequest({
       ty: 'uns',
