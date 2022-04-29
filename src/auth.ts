@@ -11,10 +11,6 @@ class MafiaOnlineAPIAuth {
   deviceID: string
   _authorized: boolean
 
-  _encodeAuthHeader() {
-    return Buffer.from(`${this.id}=:=${this.token}`).toString('base64')
-  }
-
   /**
    * Sign in into account using email and password
    * @param email Email of the account
@@ -29,6 +25,12 @@ class MafiaOnlineAPIAuth {
       pw: this._hashPassword(password)
     }, 1, true)
     return this._signInResult(response)
+  }
+
+  _hashPassword(password: string): string {
+    for (let i = 0; i < 5; i++)
+      password = md5(password + 'azxsw')
+    return password
   }
 
   /**
@@ -73,10 +75,22 @@ class MafiaOnlineAPIAuth {
     }
   }
 
-  _hashPassword(password: string): string {
-    for(let i = 0; i < 5; i++)
-      password = md5(password + 'azxsw')
-    return password
+  /**
+   * Sign out from account and delete session
+   * @returns Response from REST API
+   */
+  async signOut() {
+    return await this._fetchRest('user/sign_out', {})
+  }
+
+  static async signUp(nickname: string, email: string, password: string, language: string = 'RUS') {
+    this._fetchRest('user/sign_up', {
+      email: email,
+      username: nickname,
+      password: this._hashPassword(password),
+      deviceId: this.deviceID,
+      lang: language
+    }, false)
   }
 }
 

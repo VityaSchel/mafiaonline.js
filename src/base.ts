@@ -1,4 +1,4 @@
-import { aggregation, MafiaOnlineAPIError } from './utils.js'
+import { MafiaOnlineAPIError } from './utils.js'
 import MafiaOnlineAPIAuth from './auth.js'
 import MafiaOnlineAPIChat from './chat.js'
 import MafiaOnlineAPIConnection from './connection.js'
@@ -25,6 +25,7 @@ export interface MafiaOnlineAPIClassDeclarations {
   _socketReady: boolean
   _authorized: boolean
   logs: boolean
+  _closed: boolean
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
@@ -77,9 +78,28 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   id: number
   deviceID: string
   data: string[]
+  _closed: boolean
 
   log(...messages) {
     if(this.logs) console.log((new Date()).toISOString(), 'Mafiaonline.js:', ...messages)
+  }
+
+  /**
+   * Closes current socket and cleans up all stuff. Does not delete session, use signOut() before close()!
+   */
+  close(): Promise<void> {
+    return new Promise<void>(async resolve => {
+      if(!this._socketReady) {
+        await new Promise<void>(resolve =>
+          setInterval(() =>
+            this._socketReady && resolve()
+          , 10)
+        )
+      }
+
+      this._clientSocket['__closedGracefully'] = true
+      this._clientSocket.end(resolve)
+    })
   }
 }
 

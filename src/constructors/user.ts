@@ -5,6 +5,10 @@ class MafiaUser {
   constructor(data) {
     this.data = data
   }
+
+  getID() {
+    return this.data.o
+  }
   
   getName() {
     return this.data.u
