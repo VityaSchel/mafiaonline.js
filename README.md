@@ -20,6 +20,11 @@ TypeScript supported!
 - [x] Sign in with email/nickname&password or token&userid
 - [x] Global chat subscription 
 - [x] Rooms monitoring
+- [ ] Join/leave rooms
+- [ ] Handle incorrect password when trying to connect to room
+- [ ] Interact with chat in rooms
+- [ ] Implement events system inside room (killed, voting)
+- [ ] Implement all roles actions
 
 ## Install
 
@@ -43,7 +48,7 @@ See API reference at [docs/api-reference.md](./docs/api-reference.md)
 
 Examples can be found under [examples](./examples/) dir
 
-**If you want to make a global-chat bot, see [examples/examples.md#global-chat-bot](./examples.md#global-chat-bot)**
+**If you want to make a global-chat bot, see [examples/examples.md#global-chat-bot](./examples/examples.md#global-chat-bot)**
 
 ## Caveats
 

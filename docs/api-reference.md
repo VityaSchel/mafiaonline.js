@@ -14,6 +14,9 @@
         * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>number</code>
         * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
         * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
+        * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
+        * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
+        * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
     * [.MafiaUser](#module_mafiaonline.MafiaUser)
         * [.MafiaUser#getID()](#module_mafiaonline.MafiaUser.MafiaUser+getID) ⇒ <code>number</code>
         * [.MafiaUser#getName()](#module_mafiaonline.MafiaUser.MafiaUser+getName) ⇒ <code>string</code>
@@ -95,6 +98,9 @@
     * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>number</code>
     * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
     * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
+    * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
+    * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
+    * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
 
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+getID"></a>
 
@@ -117,6 +123,24 @@
 
 **Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
 **Returns**: <code>number</code> - <p>Minimum level for room</p>  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected"></a>
+
+#### MafiaRoom.MafiaRoom#isPasswordProtected() ⇒ <code>boolean</code>
+<p>Returns true is room is password protected</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+join"></a>
+
+#### MafiaRoom.MafiaRoom#join()
+<p>Enters the room</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+leave"></a>
+
+#### MafiaRoom.MafiaRoom#leave()
+<p>Leaves the room</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
 <a name="module_mafiaonline.MafiaUser"></a>
 
 ### MafiaOnlineAPI.MafiaUser
