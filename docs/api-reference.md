@@ -10,8 +10,15 @@
         * [.ChatMessage#getText()](#module_mafiaonline.ChatMessage.ChatMessage+getText) ⇒ <code>string</code>
         * [.ChatMessage#getSentTimestamp()](#module_mafiaonline.ChatMessage.ChatMessage+getSentTimestamp) ⇒ <code>number</code>
         * [.ChatMessage#getType()](#module_mafiaonline.ChatMessage.ChatMessage+getType) ⇒ <code>string</code>
+    * [.PlayerMiniProfile](#module_mafiaonline.PlayerMiniProfile)
+        * [.PlayerMiniProfile#getID()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getID) ⇒ <code>number</code>
+        * [.PlayerMiniProfile#getName()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getName) ⇒ <code>string</code>
+        * [.PlayerMiniProfile#isAlive()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isAlive) ⇒ <code>boolean</code>
+        * [.PlayerMiniProfile#isMale()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isMale) ⇒ <code>boolean</code>
+        * [.PlayerMiniProfile#isFemale()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isFemale) ⇒ <code>boolean</code>
+        * [.PlayerMiniProfile#getSex()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getSex) ⇒ <code>number</code>
     * [.MafiaRoom](#module_mafiaonline.MafiaRoom)
-        * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>number</code>
+        * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
         * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
         * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
         * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
@@ -37,6 +44,10 @@
     * [.MafiaOnlineAPIBase#close()](#module_mafiaonline.MafiaOnlineAPIBase+close) ⇒ <code>Promise</code>
     * [.MafiaOnlineAPIChat#joinGlobalChat(callback)](#module_mafiaonline.MafiaOnlineAPIChat+joinGlobalChat) ⇒ <code>function</code>
     * [.MafiaOnlineAPIChat#sendToGlobalChat(content, messageStyle)](#module_mafiaonline.MafiaOnlineAPIChat+sendToGlobalChat)
+    * [.MafiaOnlineAPIChat#_manageChat(events)](#module_mafiaonline.MafiaOnlineAPIChat+_manageChat) ⇒ <code>function</code>
+    * [.MafiaOnlineAPIRooms#startRoomMonitoring(callback)](#module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring) ⇒ <code>function</code>
+    * [.MafiaOnlineAPIRooms#joinRoom(room, [password])](#module_mafiaonline.MafiaOnlineAPIRooms+joinRoom)
+    * [.MafiaOnlineAPIRooms#leaveRoom(room)](#module_mafiaonline.MafiaOnlineAPIRooms+leaveRoom)
 
 <a name="module_mafiaonline.ChatMessage"></a>
 
@@ -87,6 +98,63 @@
 
 **Kind**: static method of [<code>ChatMessage</code>](#module_mafiaonline.ChatMessage)  
 **Returns**: <code>string</code> - <p>Type of message in chat</p>  
+<a name="module_mafiaonline.PlayerMiniProfile"></a>
+
+### MafiaOnlineAPI.PlayerMiniProfile
+<p>Player's mini profile. Used in room.getPlayers()</p>
+
+**Kind**: static class of [<code>mafiaonline</code>](#module_mafiaonline)  
+
+* [.PlayerMiniProfile](#module_mafiaonline.PlayerMiniProfile)
+    * [.PlayerMiniProfile#getID()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getID) ⇒ <code>number</code>
+    * [.PlayerMiniProfile#getName()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getName) ⇒ <code>string</code>
+    * [.PlayerMiniProfile#isAlive()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isAlive) ⇒ <code>boolean</code>
+    * [.PlayerMiniProfile#isMale()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isMale) ⇒ <code>boolean</code>
+    * [.PlayerMiniProfile#isFemale()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isFemale) ⇒ <code>boolean</code>
+    * [.PlayerMiniProfile#getSex()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getSex) ⇒ <code>number</code>
+
+<a name="module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getID"></a>
+
+#### PlayerMiniProfile.PlayerMiniProfile#getID() ⇒ <code>number</code>
+<p>Get in-game ID of user</p>
+
+**Kind**: static method of [<code>PlayerMiniProfile</code>](#module_mafiaonline.PlayerMiniProfile)  
+**Returns**: <code>number</code> - <p>User ID</p>  
+<a name="module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getName"></a>
+
+#### PlayerMiniProfile.PlayerMiniProfile#getName() ⇒ <code>string</code>
+<p>Get user nickname</p>
+
+**Kind**: static method of [<code>PlayerMiniProfile</code>](#module_mafiaonline.PlayerMiniProfile)  
+**Returns**: <code>string</code> - <p>User nickname</p>  
+<a name="module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isAlive"></a>
+
+#### PlayerMiniProfile.PlayerMiniProfile#isAlive() ⇒ <code>boolean</code>
+<p>Returns true if player is alive in the game</p>
+
+**Kind**: static method of [<code>PlayerMiniProfile</code>](#module_mafiaonline.PlayerMiniProfile)  
+**Returns**: <code>boolean</code> - <p>Is player alive</p>  
+<a name="module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isMale"></a>
+
+#### PlayerMiniProfile.PlayerMiniProfile#isMale() ⇒ <code>boolean</code>
+<p>Check if user sex is male</p>
+
+**Kind**: static method of [<code>PlayerMiniProfile</code>](#module_mafiaonline.PlayerMiniProfile)  
+**Returns**: <code>boolean</code> - <p>True if user is male, false otherwise</p>  
+<a name="module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isFemale"></a>
+
+#### PlayerMiniProfile.PlayerMiniProfile#isFemale() ⇒ <code>boolean</code>
+<p>Check if user sex is female</p>
+
+**Kind**: static method of [<code>PlayerMiniProfile</code>](#module_mafiaonline.PlayerMiniProfile)  
+**Returns**: <code>boolean</code> - <p>True if user is female, false otherwise</p>  
+<a name="module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getSex"></a>
+
+#### PlayerMiniProfile.PlayerMiniProfile#getSex() ⇒ <code>number</code>
+<p>Get user sex</p>
+
+**Kind**: static method of [<code>PlayerMiniProfile</code>](#module_mafiaonline.PlayerMiniProfile)  
+**Returns**: <code>number</code> - <p>0 if user is male, 0 if user is female</p>  
 <a name="module_mafiaonline.MafiaRoom"></a>
 
 ### MafiaOnlineAPI.MafiaRoom
@@ -95,7 +163,7 @@
 **Kind**: static class of [<code>mafiaonline</code>](#module_mafiaonline)  
 
 * [.MafiaRoom](#module_mafiaonline.MafiaRoom)
-    * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>number</code>
+    * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
     * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
     * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
     * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
@@ -104,11 +172,11 @@
 
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+getID"></a>
 
-#### MafiaRoom.MafiaRoom#getID() ⇒ <code>number</code>
+#### MafiaRoom.MafiaRoom#getID() ⇒ <code>string</code>
 <p>Get ID of room</p>
 
 **Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
-**Returns**: <code>number</code> - <p>ID of room</p>  
+**Returns**: <code>string</code> - <p>ID of room</p>  
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+getName"></a>
 
 #### MafiaRoom.MafiaRoom#getName() ⇒ <code>string</code>
@@ -263,7 +331,7 @@
 <p>Set server language. Mustn't change frequently (once in 6 hours)</p>
 
 **Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
-**Returns**: <code>object</code> - <p>Response from server, like this: {&quot;ty&quot;:&quot;slc&quot;,&quot;slc&quot;:&quot;ru&quot;}</p>  
+**Returns**: <code>object</code> - <p>Response from server</p>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -314,6 +382,56 @@
 | --- | --- | --- | --- |
 | content | <code>string</code> |  | <p>Text content of message</p> |
 | messageStyle | <code>number</code> | <code>0</code> | <p>Style of message (VIP-only)</p> |
+
+<a name="module_mafiaonline.MafiaOnlineAPIChat+_manageChat"></a>
+
+### MafiaOnlineAPI.MafiaOnlineAPIChat#\_manageChat(events) ⇒ <code>function</code>
+<p>Chat manager that handles new messages</p>
+
+**Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
+**Returns**: <code>function</code> - <p>Unsubscribe function</p>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| events | <code>object</code> | <p>Events object as first arg</p> |
+| events.onMessage | <code>function</code> | <p>Callback with message class as argument</p> |
+| events.onUserListUpdate | <code>function</code> | <p>Callback with array of users</p> |
+| events.onLeave | <code>function</code> | <p>Called on unsubscribing. Must be as simple, as possible</p> |
+
+<a name="module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring"></a>
+
+### MafiaOnlineAPI.MafiaOnlineAPIRooms#startRoomMonitoring(callback) ⇒ <code>function</code>
+<p>Get rooms list and subscribe for changes</p>
+
+**Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
+**Returns**: <code>function</code> - <p>Function to unsubscribe</p>  
+
+| Param | Description |
+| --- | --- |
+| callback | <p>Callback that gets called with argument of type Room</p> |
+
+<a name="module_mafiaonline.MafiaOnlineAPIRooms+joinRoom"></a>
+
+### MafiaOnlineAPI.MafiaOnlineAPIRooms#joinRoom(room, [password])
+<p>Join room. You can also call join() method directly on Room instance</p>
+
+**Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| room | <code>Room</code> | <p>Room instance. Must be obtained from monitoring by calling startRoomMonitoring() function</p> |
+| [password] | <code>string</code> | <p>Optional. Password in clear text, hashing is done on library side</p> |
+
+<a name="module_mafiaonline.MafiaOnlineAPIRooms+leaveRoom"></a>
+
+### MafiaOnlineAPI.MafiaOnlineAPIRooms#leaveRoom(room)
+<p>Leave room. You can also call leave() method directly on Room instance</p>
+
+**Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| room | <code>Room</code> | <p>Room instance. Must be obtained from monitoring by calling startRoomMonitoring() function</p> |
 
 
 ## REST API

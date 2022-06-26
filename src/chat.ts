@@ -2,9 +2,11 @@ import MafiaOnlineAPIConnection from './connection.js'
 import User from './constructors/user.js'
 import { MafiaOnlineAPIError, banHandler } from './utils.js'
 import ChatMessage from './constructors/chatMessage.js'
+import MafiaUser from './constructors/user.js'
 
 interface _manageChatArgs {
   onMessage: (msg: ChatMessage) => void
+  onUserListUpdate?: (users: MafiaUser[]) => void
   onLeave?: () => void | Promise<void>
 }
 
@@ -20,11 +22,12 @@ class MafiaOnlineAPIChat {
    * @param {function} callback Callback function, that gets called everytime a new message sent by someone in chat with message argument. It is strongly recommended that you check msg.isHistory() before interacting with it, because when you join chat, server sends you a lot of history messages (that were sent before you joined).
    * @returns {function} Unsubscribe function
    */
-  async joinGlobalChat(callback: (msg: ChatMessage) => void) {
+  async joinGlobalChat(callback: (msg: ChatMessage) => void, updateUsers: (users: MafiaUser[]) => void) {
     await this._waitForReadyState()
     this._sendData({ ty: 'acc' })
     const unsubscribe = this._manageChat({
       onMessage: callback,
+      onUserListUpdate: updateUsers,
       onLeave: async () => {
         await this._sendRequest({ ty: 'acd' }, 'uud')
       }
@@ -55,17 +58,18 @@ class MafiaOnlineAPIChat {
    * @memberof module:mafiaonline
    * @param {object} events Events object as first arg
    * @param {function} events.onMessage Callback with message class as argument
+   * @param {function} events.onUserListUpdate Callback with array of users
    * @param {function} events.onLeave Called on unsubscribing. Must be as simple, as possible
    * @returns {function} Unsubscribe function
    */
-  _manageChat({ onMessage, onLeave }: _manageChatArgs): () => Promise<void> {
+  _manageChat({ onMessage, onUserListUpdate, onLeave }: _manageChatArgs): () => Promise<void> {
     const messageIDS = [], subscriptionDate = Date.now()
 
     const chatListener = this._processRequestResponse(response => {
       const messages = JSON.parse(response)
       switch (messages.ty) {
         case 'u':
-          console.log(response)
+          onUserListUpdate?.(messages.u.map(user => new MafiaUser(user)))
           return
 
         case 'm':
