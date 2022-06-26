@@ -94,16 +94,28 @@ export default class MafiaOnlineAPIConnection {
     })
   }
   
-  _addListenerToQueue(reactToCodes: string|string[], segmentsCount = 1): Promise<Array<object>> {
+  _addListenerToQueue(reactToCodes: string | string[], segmentsCount = 1, timeout: number | void = 15): Promise<Array<object>> {
     return new Promise(resolve => {
       if (typeof reactToCodes === 'string') reactToCodes = [reactToCodes]
+
+      let timeoutInterval
+      const callbacks = []
+      if(timeout) timeoutInterval = setTimeout(() => {
+        this._listeners = this._listeners.filter(a => !callbacks.includes(a))
+        throw new MafiaOnlineAPIError('ERRTIMEOUT',
+          'Couldn\'t get a response from server within specified time. Adjust timeout argument to increase time or use _sendData method directly.')
+      }, timeout * 1000)
 
       const responses = []
       for (let i = 0; i < segmentsCount; i++) {
         const callback = (response: object) => {
           responses.push(response)
-          if(i === segmentsCount - 1) resolve(responses)
+          if(i === segmentsCount - 1) {
+            clearTimeout(timeoutInterval)
+            resolve(responses)
+          }
         }
+        callbacks.push(callbacks)
         this._listeners.push({ codes: reactToCodes, callback })
       }
     })
@@ -116,8 +128,9 @@ export default class MafiaOnlineAPIConnection {
    */
   async _dataReceived() {
     let response: object | null = null
+    const data = this.data.pop()
     try {
-      response = JSON.parse(this.data.pop())
+      response = JSON.parse(data)
     } catch(e) {
       response = null
     }

@@ -15,6 +15,7 @@ ncmt|New cloud messaging token (unknown)
 uns|Set nickname
 acrl|Get list of rooms
 re|Join room
+gp|Get players in room
 rmc|Send message to room chat
 rp|Leave room
 ac|Accept messages

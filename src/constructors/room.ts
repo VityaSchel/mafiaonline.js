@@ -1,3 +1,4 @@
+import MafiaOnlineAPIBase from '../base.js'
 import { hashPassword } from '../utils.js'
 import ChatMessage from './chatMessage.js'
 import PlayerMiniProfile from './playerMiniProfile.js'
@@ -57,7 +58,8 @@ class MafiaRoom {
   }
 
   async getPlayers(): Promise<PlayerMiniProfile[]> {
-    const players: object = await this.super._sendImplicitRequest({ ty: 'gp', ro: this.getID() })
+    const base: MafiaOnlineAPIBase = this.super
+    const players: object = await base._sendRequest({ ty: 'gp', ro: this.getID() }, 'pin')
     return players['pls']
   }
 
