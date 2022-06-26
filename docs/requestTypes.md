@@ -31,7 +31,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"sin"}
 ```
 
@@ -45,7 +45,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"acfl"}
 ```
 
@@ -59,7 +59,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"acc"}
 ```
 
@@ -73,7 +73,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"cmc"}
 ```
 
@@ -87,7 +87,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"acd"}
 ```
 
@@ -101,7 +101,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"ncmt"}
 ```
 
@@ -115,7 +115,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"uns"}
 ```
 
@@ -129,7 +129,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"acrl"}
 ```
 
@@ -143,7 +143,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"rmc"}
 ```
 
@@ -157,7 +157,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"ac"}
 ```
 
@@ -171,7 +171,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"cp"}
 ```
 
@@ -185,7 +185,7 @@ todo|todo
 
 Example:
 
-```
+```json
 {"ty":"usls"}
 ```
 
@@ -198,10 +198,16 @@ Key|Description
 psw|Password to join the room
 ro|Room ID
 
-Example:
+Example request:
 
+```json
+{"ty":"re","ro":"ru_room_62b885b5181a0ca4d95ajv","psw":""}
 ```
-{"ty":"re"}
+
+Example response:
+
+```json
+{"rr":{"o":"ru_room_62b885b5181a0ca4d95ajv","mnp":5,"mxp":8,"mnl":1,"venb":false,"s":0,"t":0,"d":0,"dc":true,"lv":true,"tr":false,"jr":false,"bd":false,"br":false,"sp":true,"tt":"⚘иди уже","pw":""},"ty":"re"}
 ```
 
 Possible errors:
@@ -209,6 +215,22 @@ Possible errors:
 Ty|Description
 rpiw|Room password is wrong. May be issue with hashing.
 ulne|User level not enough
+
+### **rp** Leave room
+
+Arguments:
+
+Key|Description
+-|-
+ro|Room ID
+
+Example request:
+
+```json
+{"ty":"rp","ro":"ru_room_62b885b5181a0ca4d95ajv"}
+```
+
+No response expected
 
 ## In response
 

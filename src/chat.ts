@@ -89,7 +89,7 @@ class MafiaOnlineAPIChat {
     const messageIncoming = msg => {
       if (messageIDS.includes(msg.c)) return
       messageIDS.push(msg.c)
-      onMessage(new ChatMessage(msg, subscriptionDate))
+      onMessage?.(new ChatMessage(msg, subscriptionDate))
     }
 
     this._clientSocket.addListener('data', chatListener)

@@ -25,6 +25,8 @@ TypeScript supported!
 - [ ] Interact with chat in rooms
 - [ ] Implement events system inside room (killed, voting)
 - [ ] Implement all roles actions
+- [ ] Replace all short codes with constants
+- [ ] Move this to GitHub projects
 
 ## Install
 

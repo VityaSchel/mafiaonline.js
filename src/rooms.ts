@@ -1,5 +1,7 @@
 import MafiaOnlineAPIConnection from './connection.js'
+import MafiaOnlineAPIChat from './chat.js'
 import Room from './constructors/room.js'
+import { MafiaOnlineAPIError } from './utils.js'
 
 class MafiaOnlineAPIRooms {
 
@@ -39,12 +41,31 @@ class MafiaOnlineAPIRooms {
     }
 
     const joinRoom = async (roomInstance: Room, password = '') => {
+      if (!monitoring) return false
       stopMonitoring()
-      await this._sendRequest({ ty: 're', psw: password, ro: roomInstance.getID() })
-      roomInstance.joined = true
-      this._sendRequest({ ty: 'cp', ro: roomInstance.getID() })
-      this._clientSocket.removeListener('data', this._defaultSocketResponseListener)
-      this._clientSocket.addListener('data', console.log)
+      const result = await this._sendRequest({ ty: 're', psw: password, ro: roomInstance.getID() })
+      switch (result['ty']) {
+        case 'rpiw':
+          throw new MafiaOnlineAPIError('ERRRPIW', 'Specified room password is wrong')
+
+        case 'ulne':
+          throw new MafiaOnlineAPIError('ERRULNE', 'Your level is not high enough to join this room')
+
+        case 're':
+          (() => {
+            roomInstance.joined = true
+            this._sendRequest({ ty: 'cp', ro: roomInstance.getID() })
+            const unsubscribe = this._manageChat({
+              onMessage: roomInstance.onMessage,
+              // onLeave: () => throw new MafiaOnlineAPIError('ERRUNEXPECTEDLEAVE', 'Do not leave room chat directly. Instead use roomInstance.leave()')
+            })
+            roomInstance.chatUnsubscribe = unsubscribe
+          })()
+          return true
+
+        default: 
+          return
+      }
     }
 
     const leaveRoom = (roomInstance: Room) => {
@@ -73,6 +94,6 @@ class MafiaOnlineAPIRooms {
   }
 }
 
-interface MafiaOnlineAPIRooms extends MafiaOnlineAPIConnection { }
+interface MafiaOnlineAPIRooms extends MafiaOnlineAPIConnection, MafiaOnlineAPIChat { }
 
 export default MafiaOnlineAPIRooms

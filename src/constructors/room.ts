@@ -1,4 +1,5 @@
 import { hashPassword } from '../utils.js'
+import ChatMessage from './chatMessage.js'
 
 /**
  * @class MafiaRoom
@@ -10,6 +11,7 @@ class MafiaRoom {
   joined: boolean
   _join: (roomInstance: MafiaRoom, password?: string) => void
   _leave: (roomInstance: MafiaRoom) => void
+  onMessage?: (message: ChatMessage) => void
 
   constructor(data) {
     this.data = data
