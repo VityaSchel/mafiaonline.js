@@ -12,6 +12,7 @@ class MafiaRoom {
   _join: (roomInstance: MafiaRoom, password?: string) => void
   _leave: (roomInstance: MafiaRoom) => void
   onMessage?: (message: ChatMessage) => void
+  chatUnsubscribe: () => void
 
   constructor(data) {
     this.data = data
@@ -20,9 +21,9 @@ class MafiaRoom {
   /**
    * Get ID of room
    * @memberof module:mafiaonline.MafiaRoom
-   * @returns {number} ID of room
+   * @returns {string} ID of room
    */
-  getID(): number {
+  getID(): string {
     return this.data.o
   }
 

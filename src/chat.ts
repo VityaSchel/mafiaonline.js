@@ -53,6 +53,7 @@ class MafiaOnlineAPIChat {
 
   /**
    * Chat manager that handles new messages
+   * @memberof module:mafiaonline
    * @param {object} events Events object as first arg
    * @param {function} events.onMessage Callback with message class as argument
    * @param {function} events.onLeave Called on unsubscribing. Must be as simple, as possible
