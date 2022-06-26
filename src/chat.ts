@@ -27,7 +27,7 @@ class MafiaOnlineAPIChat {
     const unsubscribe = this._manageChat({
       onMessage: callback,
       onLeave: async () => {
-        await this._sendRequest({ ty: 'acd' })
+        await this._sendRequest({ ty: 'acd' }, 'uud')
       }
     })    
     this.log('Subscribed to public chat')

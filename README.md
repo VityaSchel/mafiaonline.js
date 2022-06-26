@@ -20,10 +20,11 @@ TypeScript supported!
 - [x] Sign in with email/nickname&password or token&userid
 - [x] Global chat subscription 
 - [x] Rooms monitoring
-- [ ] Join/leave rooms
-- [ ] Handle incorrect password when trying to connect to room
+- [x] Join/leave rooms
 - [ ] Interact with chat in rooms
+- [ ] Handle incorrect password when trying to connect to room
 - [ ] Implement events system inside room (killed, voting)
+- [ ] Tie requests to expected response codes
 - [ ] Implement all roles actions
 - [ ] Replace all short codes with constants
 - [ ] Move this to GitHub projects

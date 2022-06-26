@@ -4,7 +4,7 @@
  * @memberof module:mafiaonline
  */
 class MafiaUser {
-  data: any
+  data: object
   date: string | number | Date
 
   constructor(data) {
@@ -17,7 +17,7 @@ class MafiaUser {
    * @returns {number} User ID
    */
   getID(): number {
-    return this.data.o
+    return this.data['o']
   }
   
   /**
@@ -26,7 +26,7 @@ class MafiaUser {
    * @returns {string} User nickname
    */
   getName(): string {
-    return this.data.u
+    return this.data['u']
   }
 
   /**
@@ -35,7 +35,7 @@ class MafiaUser {
    * @returns {number} User experience
    */
   getExperience(): number {
-    return this.data.ex
+    return this.data['ex']
   }
 
   /**
@@ -53,7 +53,7 @@ class MafiaUser {
    * @returns {number} User level
    */
   getLevel(): number {
-    return this.data.l
+    return this.data['l']
   }
 
   /**
@@ -62,7 +62,7 @@ class MafiaUser {
    * @returns {number} User reputation
    */
   getReputation(): number {
-    return this.data.a
+    return this.data['a']
   }
 
   /**
@@ -72,22 +72,22 @@ class MafiaUser {
    */
   getPlayedGames(): object {
     return {
-      overall: this.data.pg,
+      overall: this.data['p']['g'],
       won: {
-        asMafia: this.data.wim,
-        asPeaceful: this.data.wip
+        asMafia: this.data['w']['im'],
+        asPeaceful: this.data['w']['ip']
       },
       was: {
-        mafia: this.data.wm,
-        comissar: this.data.wc,
-        doctor: this.data.wd,
-        prostitute: this.data.wlv,
-        terrorist: this.data.wt,
-        journalist: this.data.wj,
-        bodyguard: this.data.wbg,
-        barman: this.data.wbr,
-        spy: this.data.wsp,
-        peaceful: this.data.wp
+        mafia: this.data['w']['m'],
+        comissar: this.data['w']['c'],
+        doctor: this.data['w']['d'],
+        prostitute: this.data['w']['lv'],
+        terrorist: this.data['w']['t'],
+        journalist: this.data['w']['j'],
+        bodyguard: this.data['w']['bg'],
+        barman: this.data['w']['br'],
+        spy: this.data['w']['sp'],
+        peaceful: this.data['w']['p']
       }
     }
   }
@@ -98,7 +98,7 @@ class MafiaUser {
    * @returns {string} User locale
    */
   getLocale(): string {
-    return this.data.slc
+    return this.data['slc']
   }
 
   /**
@@ -107,7 +107,7 @@ class MafiaUser {
    * @returns {boolean} True if user is male, false otherwise
    */
   isMale(): boolean {
-    return this.data.s === 0
+    return this.data['s'] === 0
   }
 
   /**
@@ -116,7 +116,7 @@ class MafiaUser {
    * @returns {boolean} True if user is female, false otherwise
    */
   isFemale(): boolean {
-    return this.data.s === 1
+    return this.data['s'] === 1
   }
 
   /**
@@ -125,7 +125,7 @@ class MafiaUser {
    * @returns {number} 0 if user is male, 0 if user is female
    */
   getSex(): number {
-    return this.data.s
+    return this.data['s']
   }
 }
 

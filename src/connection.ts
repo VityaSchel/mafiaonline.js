@@ -8,7 +8,7 @@ import { MafiaOnlineAPIError, banHandler } from './utils.js'
 export default class MafiaOnlineAPIConnection {
   _socketReady: boolean
   _authorized: boolean
-  _listeners: Function[]
+  _listeners: { codes: string[], callback: (response: object) => void }[]
   credentials: MafiaOnlineAPICredentials
   account: MafiaUser
   token: string
@@ -17,6 +17,7 @@ export default class MafiaOnlineAPIConnection {
   data: string[]
   _clientSocket: net.Socket
   log: Function
+  logs: boolean
   _defaultSocketResponseListener: (...args: any[]) => void
 
   async _createConnection() {
@@ -32,15 +33,23 @@ export default class MafiaOnlineAPIConnection {
     this._createListener()
   }
 
+  /**
+   * Creates default listener that should be used until program exits.
+   * Only called once while connecting.
+   */
   _createListener() {
     this._defaultSocketResponseListener = this._processRequestResponse(resultStr => {
       this.data.push(resultStr)
+      this._dataReceived()
       this.log('Received response from server:', resultStr)
     })
     this._clientSocket.addListener('data', this._defaultSocketResponseListener)
   }
 
-  _processRequestResponse(callback) {
+  /**
+   * Parses TCP chunks into strings
+   */
+  _processRequestResponse(callback: (result: string) => void) {
     let container = []
     return chunk => {
       container.push(chunk)
@@ -56,6 +65,7 @@ export default class MafiaOnlineAPIConnection {
             try {
               const response = JSON.parse(resultStr)
               if (response['ty'] === 'ublk') isBanned = true
+              if (response['ty'] === 'err') this.logs && console.error('Unexpected error received from server', response)
             } catch(e) {/**/}
             if (isBanned) banHandler(JSON.parse(resultStr))
 
@@ -66,6 +76,11 @@ export default class MafiaOnlineAPIConnection {
     }
   }
 
+  /**
+   * Send data directly to server without expecting answer to it
+   * @param {object} [data] JSON-serializable data to send
+   * @param {boolean} [skipAuthorizationCheck] Pass true to skip awaiting authorization
+   */
   _sendData(data: object = {}, skipAuthorizationCheck = false) {
     return new Promise<void>(async (resolve, reject) => {
       await this._waitForReadyState(skipAuthorizationCheck)
@@ -79,58 +94,101 @@ export default class MafiaOnlineAPIConnection {
     })
   }
   
-  _addListenerToQueue(segmentsCount = 1): Promise<Array<string>> {
+  _addListenerToQueue(reactToCodes: string|string[], segmentsCount = 1): Promise<Array<object>> {
     return new Promise(resolve => {
-      this._listeners.push(resolve)
-      this._listen(segmentsCount)
+      if (typeof reactToCodes === 'string') reactToCodes = [reactToCodes]
+      const responses = []
+      for (let i = 0; i < segmentsCount; i++) {
+        const callback = (response: object) => {
+          responses.push(response)
+          if(i === segmentsCount) resolve(responses)
+        }
+        this._listeners.push({ codes: reactToCodes, callback })
+      }
     })
   }
 
-  async _listen(segmentsCount = 1, timeout: number|void = 15): Promise<Array<string>> {
-    if(this._listeners.length !== 1) return
+  /**
+   * Called by _defaultSocketResponseListener when new string gets pushed into this.data
+   * Finds listener that requested data among this._listeners and passes data into callback
+   * If listener not found, ignores it because it may be some global message like chat or rooms monitoring
+   */
+  async _dataReceived() {
+    let response: object | null = null
+    try {
+      response = JSON.parse(this.data.pop())
+    } catch(e) {
+      response = null
+    }
 
-    let interval, timeoutInterval
-    if(timeout) timeoutInterval = setTimeout(() => {
-      clearInterval(interval)
-      throw new MafiaOnlineAPIError('ERRTIMEOUT', 
-        'Couldn\'t get a response from server within specified time. Adjust timeout argument to increase time or use _sendData method directly.')
-    }, timeout * 1000)
+    if (response === null) {
+      // Couldn't find what's the code, so ignore it
+      return
+    }
 
-    await new Promise<void>(resolve =>
-      interval = setInterval(() => this.data.length >= segmentsCount && resolve(), 10)
-    )
-
-    clearInterval(interval)
-    clearInterval(timeoutInterval)
-
-    const segments = new Array(segmentsCount).fill(null).map(() => this.data.shift())
-
-    const listenerCallback = this._listeners.shift()
-
-    listenerCallback(segments)
-    if(this._listeners.length > 0) this._listen()
+    const code: string = response['ty']
+    const listenerIndex = this._listeners.findIndex(listener => listener.codes.includes(code))
+    if (listenerIndex === -1) {
+      // Couldn't find who's been asking for this response, so ignore it
+      return
+    }
+    const listener = this._listeners[listenerIndex]
+    this._listeners.splice(listenerIndex, 1)
+    listener.callback(response)
   }
+
+  // /**
+  //  * Call to wait for data from server in TCP socket.
+  //  * @param segmentsCount 
+  //  * @param timeout 
+  //  * @returns 
+  //  */
+  // async _listen(segmentsCount = 1, timeout: number|void = 15): Promise<Array<string>> {
+  //   if(this._listeners.length !== 1) return
+
+  //   let interval, timeoutInterval
+  //   if(timeout) timeoutInterval = setTimeout(() => {
+  //     clearInterval(interval)
+  //     throw new MafiaOnlineAPIError('ERRTIMEOUT', 
+  //       'Couldn\'t get a response from server within specified time. Adjust timeout argument to increase time or use _sendData method directly.')
+  //   }, timeout * 1000)
+
+  //   await new Promise<void>(resolve =>
+  //     interval = setInterval(() => this.data.length >= segmentsCount && resolve(), 10)
+  //   )
+
+  //   clearInterval(interval)
+  //   clearInterval(timeoutInterval)
+
+  //   const segments = new Array(segmentsCount).fill(null).map(() => this.data.shift())
+
+  //   const listenerCallback = this._listeners.shift()
+
+  //   listenerCallback(segments)
+  //   if(this._listeners.length > 0) this._listen()
+  // }
 
   /**
    * Wrapper around _sendData() and _listen()
    * @param data Object with data to send to server. Must be JSON-serializable.
+   * @param {string|string[]} reactToCodes List of short-codes that server may return in response
    * @param {number} segmentsCount Number of segments that should be received from server
    * @param {boolean} skipAuthorizationCheck Skip awaiting for authorization
    */
-  async _sendRequest(data: object = {}, segmentsCount = 1, skipAuthorizationCheck = false): Promise<object | Array<object>> {
+  async _sendRequest(data: object = {}, reactToCodes: string | string[], segmentsCount = 1, skipAuthorizationCheck = false): Promise<object | Array<object>> {
     await this._sendData(data, skipAuthorizationCheck)
-    const responseRawSegments = await this._addListenerToQueue(segmentsCount)
+    const responseRawSegments = await this._addListenerToQueue(reactToCodes, segmentsCount)
     const responseSegments = []
-    for (let segment of responseRawSegments) {
-      let response
-      try {
-        response = JSON.parse(segment)
-      } catch(e) {
-        console.error(response)
-        console.log(e)
-        throw new MafiaOnlineAPIError('ERRRESPSYNTAX', 'Couldn\'t parse JSON response from server in TCP socket.')
-      }
-      responseSegments.push(response)
+    for (const segment of responseRawSegments) {
+      // let response
+      // try {
+      //   response = JSON.parse(segment)
+      // } catch(e) {
+      //   console.error(response)
+      //   console.log(e)
+      //   throw new MafiaOnlineAPIError('ERRRESPSYNTAX', 'Couldn\'t parse JSON response from server in TCP socket.')
+      // }
+      responseSegments.push(segment)
     }
     return responseSegments.length === 1 ? responseSegments[0] : responseSegments
   }

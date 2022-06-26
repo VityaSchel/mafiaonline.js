@@ -14,7 +14,7 @@ class MafiaOnlineAPIAccount {
    * @returns {Promise<MafiaUser>} Instance of User class
    */
   async getUser(): Promise<MafiaUser> {
-    const user = await this._sendRequest({ ty: 'acd' })
+    const user = await this._sendRequest({ ty: 'acd' }, 'uud')
     this.account = new MafiaUser(user[0]['uu'])
     return this.account
   }
@@ -28,10 +28,7 @@ class MafiaOnlineAPIAccount {
   async setNickname(nickname: string): Promise<boolean> {
     if (!/^[a-zA-Zа-яА-Я0-9 ]+$/.test(nickname)) throw new MafiaOnlineAPIError('ERRNICKSETCHARS', 'Nickname must be [a-zA-Zа-яА-Я0-9 ]')
 
-    const response = await this._sendRequest({
-      ty: 'uns',
-      u: nickname
-    })
+    const response = await this._sendRequest({ ty: 'uns', u: nickname }, ['uns', 'unws', 'unex'])
     switch(response['ty']) {
       case 'unws':
         throw new MafiaOnlineAPIError('ERRNICKSETAPI', 'Error while setting nickname: ' + JSON.stringify(response))
@@ -41,9 +38,6 @@ class MafiaOnlineAPIAccount {
 
       case 'uns':
         return true
-
-      default:
-        throw new MafiaOnlineAPIError('ERRNICKSET', 'Error while setting nickname: ' + JSON.stringify(response))
     }
   }
 
@@ -51,14 +45,11 @@ class MafiaOnlineAPIAccount {
    * Set server language. Mustn't change frequently (once in 6 hours)
    * @param {string} locale One of 'ru', 'en'
    * @memberof module:mafiaonline
-   * @returns {object} Response from server, like this: {"ty":"slc","slc":"ru"}
+   * @returns {object} Response from server
    */
   async setLocale(locale: 'ru' | 'en') {
     if(!['ru', 'en'].includes(locale)) throw new MafiaOnlineAPIError('ERRLOCALEINCORRECT', 'Locale must be one of \'ru\', \'en\'')
-    return await this._sendRequest({
-      type: 'usls',
-      slc: locale
-    })
+    return await this._sendRequest({ type: 'usls', slc: locale }, 'slc')
   }
 }
 

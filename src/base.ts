@@ -22,7 +22,7 @@ export interface MafiaOnlineAPIClassDeclarations {
   id: number
   deviceID: string
   data: Array<string>
-  _listeners: Array<Function>
+  _listeners: { codes: string[], callback: (response: object) => void }[]
   _clientSocket: net.Socket
   _socketReady: boolean
   _authorized: boolean
@@ -34,7 +34,7 @@ export interface MafiaOnlineAPIClassDeclarations {
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
-  constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean = false) {
+  constructor(credentials: MafiaOnlineAPICredentials, verboseLogs = false) {
     let tokenCredentials
     if (credentials.token && credentials.userID){
       tokenCredentials = true
@@ -79,7 +79,7 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   _clientSocket: net.Socket
   _socketReady: boolean
   _authorized: boolean
-  _listeners: Function[]
+  _listeners: { codes: string[], callback: (response: object) => void }[]
   credentials: MafiaOnlineAPICredentials
   account: MafiaUser
   token: string

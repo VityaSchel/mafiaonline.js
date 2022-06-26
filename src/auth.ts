@@ -22,7 +22,7 @@ class MafiaOnlineAPIAuth {
       ty: 'sin',
       e: email,
       pw: hashPassword(password)
-    }, 1, true)
+    }, ['siner', 'usi'], 1, true)
     return this._signInResult(response)
   }  
 
@@ -38,7 +38,7 @@ class MafiaOnlineAPIAuth {
       e: '', pw: '',
       t: token,
       o: userID
-    }, 1, true)
+    }, ['siner', 'usi'], 1, true)
     return this._signInResult(response)
   }
 
@@ -66,9 +66,6 @@ class MafiaOnlineAPIAuth {
         this._authorized = true
         this.log('Logged in as', this.account.getName())
         return this.account
-
-      default:
-        throw new MafiaOnlineAPIError('ERRLOGINUNKNOWN', 'Couldn\'t complete sign in process. Expected "usi" or "siner", got "' + response['ty'] + '"')
     }
   }
 

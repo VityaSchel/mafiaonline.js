@@ -1,5 +1,6 @@
 import { hashPassword } from '../utils.js'
 import ChatMessage from './chatMessage.js'
+import PlayerMiniProfile from './playerMiniProfile.js'
 
 /**
  * @class MafiaRoom
@@ -13,6 +14,7 @@ class MafiaRoom {
   _leave: (roomInstance: MafiaRoom) => void
   onMessage?: (message: ChatMessage) => void
   chatUnsubscribe: () => void
+  super
 
   constructor(data) {
     this.data = data
@@ -52,6 +54,11 @@ class MafiaRoom {
    */
   isPasswordProtected(): boolean {
     return this.data.pw === '1'
+  }
+
+  async getPlayers(): Promise<PlayerMiniProfile[]> {
+    const players: object = await this.super._sendImplicitRequest({ ty: 'gp', ro: this.getID() })
+    return players['pls']
   }
 
   /**
