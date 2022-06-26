@@ -17,5 +17,5 @@ This bot runs in global chat (available from main menu). You can create it by us
 - [Calculator](./globalChatCalculator.js)
   - Run in command line, join global chat from other account and use command `/calc digit + digit` or `/calc digit - digit`
 - [Chat from prompt](./chatFromPropmpt.js)
-  - In-game global chat implemented as CLI
+  - In-game global chat implemented as CLI. Type "exit" to safely leave the chat and exit the process
   - ![Chat in cli screenshot](https://user-images.githubusercontent.com/59040542/166064524-4471edc6-caa1-4109-81f4-6bbbdcfca807.jpg)

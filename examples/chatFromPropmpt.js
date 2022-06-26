@@ -3,7 +3,7 @@ import MafiaOnlineAPI from '../dist/index.js'
 import chalk from 'chalk'
 
 const mafiaOnlineAPI = new MafiaOnlineAPI({ email: process.env.EMAIL, password: process.env.PASSWORD })
-await mafiaOnlineAPI.joinGlobalChat(async msg => {
+const unsubscribe = await mafiaOnlineAPI.joinGlobalChat(async msg => {
   switch (msg.getType()){
     case 'clear_text':
       print(msg.getSender()?.getName() + ': ' + msg.getText())
@@ -46,7 +46,11 @@ stdin.on('data', function (key) {
       break
       
     case '\u000d':
-      mafiaOnlineAPI.sendToGlobalChat(current)
+      if(current === 'exit') {
+        unsubscribe().then(() => process.exit())
+      } else {
+        mafiaOnlineAPI.sendToGlobalChat(current)
+      }
       current = ''
       console.log('\b')
       stdout.write(prompt)

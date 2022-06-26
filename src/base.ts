@@ -28,6 +28,9 @@ export interface MafiaOnlineAPIClassDeclarations {
   _authorized: boolean
   logs: boolean
   _closed: boolean
+  joinedChat: {
+    type: 'global' | 'room' | null
+  }
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
@@ -52,6 +55,9 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
     this.deviceID = nanoid(12)
     this.data = []
     this._listeners = []
+    this.joinedChat = {
+      type: null
+    }
 
     this._createConnection()
       .then(() => {

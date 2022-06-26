@@ -3,8 +3,17 @@ import User from './constructors/user.js'
 import { MafiaOnlineAPIError, banHandler } from './utils.js'
 import ChatMessage from './constructors/chatMessage.js'
 
+
+interface _manageChatArgs {
+  onMessage: (msg: ChatMessage) => void
+  onLeave?: () => void | Promise<void>
+}
+
 class MafiaOnlineAPIChat {
   id: number
+  joinedChat: {
+    type: 'global' | 'room' | null
+  }
 
   /**
    * Subscribe to global public chat
@@ -14,51 +23,15 @@ class MafiaOnlineAPIChat {
    */
   async joinGlobalChat(callback: (msg: ChatMessage) => void) {
     await this._waitForReadyState()
-
-    let chatListener
-    const messageIDS = [], subscriptionDate = Date.now()
-    const subscribeToPublicChat = () => {
-      this._clientSocket.removeListener('data', this._defaultSocketResponseListener)
-      this.log('Subscribed to public chat')
-
-      chatListener = this._processRequestResponse(response => {
-        const messages = JSON.parse(response)
-        switch (messages.ty) {
-          case 'u':
-            return
-
-          case 'm':
-            messageIncoming(messages.m)
-            break
-
-          case 'ms':
-            messages.ms.forEach(messageIncoming)
-            break
-
-          case 'ublk':
-            banHandler(messages)
-            break
-
-          default:
-            break
-        }
-      })
-
-      const messageIncoming = msg => {
-        if (messageIDS.includes(msg.c)) return
-        messageIDS.push(msg.c)
-        callback(new ChatMessage(msg, subscriptionDate))
+    this._sendData({ ty: 'acc' })
+    const unsubscribe = this._manageChat({
+      onMessage: callback,
+      onLeave: async () => {
+        await this._sendRequest({ ty: 'acd' })
       }
-
-      this._clientSocket.addListener('data', chatListener)
-      this._sendData({ ty: 'acc' })
-    }
-    subscribeToPublicChat()
-    return () => {
-      this._sendRequest({ ty: 'acd' }, 2)
-      this._clientSocket.removeListener('data', chatListener)
-      this._clientSocket.addListener('data', this._defaultSocketResponseListener)
-    }
+    })    
+    this.log('Subscribed to public chat')
+    return unsubscribe
   }
 
   /**
@@ -68,6 +41,7 @@ class MafiaOnlineAPIChat {
    * @param {number} messageStyle Style of message (VIP-only)
    */
   async sendToGlobalChat(content: string, messageStyle = 0) {
+    if (this.joinedChat.type === 'global') throw new MafiaOnlineAPIError('ERRMESSAGEOUTSIDE', 'You are trying to send message to global chat, while not in global chat.Join it first with joinGlobalChat() function')
     await this._sendData({
       ty: 'cmc',
       m: {
@@ -75,6 +49,56 @@ class MafiaOnlineAPIChat {
         mstl: messageStyle,
       }
     })
+  }
+
+  /**
+   * Chat manager that handles new messages
+   * @param {object} events Events object as first arg
+   * @param {function} events.onMessage Callback with message class as argument
+   * @param {function} events.onLeave Called on unsubscribing. Must be as simple, as possible
+   * @returns {function} Unsubscribe function
+   */
+  _manageChat({ onMessage, onLeave }: _manageChatArgs): () => Promise<void> {
+    const messageIDS = [], subscriptionDate = Date.now()
+
+    this._clientSocket.removeListener('data', this._defaultSocketResponseListener)
+
+    const chatListener = this._processRequestResponse(response => {
+      const messages = JSON.parse(response)
+      switch (messages.ty) {
+        case 'u':
+          return
+
+        case 'm':
+          messageIncoming(messages.m)
+          break
+
+        case 'ms':
+          messages.ms.forEach(messageIncoming)
+          break
+
+        case 'ublk':
+          banHandler(messages)
+          break
+
+        default:
+          break
+      }
+    })
+
+    const messageIncoming = msg => {
+      if (messageIDS.includes(msg.c)) return
+      messageIDS.push(msg.c)
+      onMessage(new ChatMessage(msg, subscriptionDate))
+    }
+
+    this._clientSocket.addListener('data', chatListener)
+
+    return async () => {
+      this._clientSocket.removeListener('data', chatListener)
+      this._clientSocket.addListener('data', this._defaultSocketResponseListener)
+      await onLeave()
+    }
   }
 }
 

@@ -14,7 +14,7 @@ class MafiaOnlineAPIAccount {
    * @returns {Promise<MafiaUser>} Instance of User class
    */
   async getUser(): Promise<MafiaUser> {
-    const user = await this._sendRequest({ ty: 'acd' }, 2)
+    const user = await this._sendRequest({ ty: 'acd' })
     this.account = new MafiaUser(user[0]['uu'])
     return this.account
   }
