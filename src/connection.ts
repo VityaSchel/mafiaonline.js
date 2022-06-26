@@ -97,11 +97,12 @@ export default class MafiaOnlineAPIConnection {
   _addListenerToQueue(reactToCodes: string|string[], segmentsCount = 1): Promise<Array<object>> {
     return new Promise(resolve => {
       if (typeof reactToCodes === 'string') reactToCodes = [reactToCodes]
+
       const responses = []
       for (let i = 0; i < segmentsCount; i++) {
         const callback = (response: object) => {
           responses.push(response)
-          if(i === segmentsCount) resolve(responses)
+          if(i === segmentsCount - 1) resolve(responses)
         }
         this._listeners.push({ codes: reactToCodes, callback })
       }
@@ -177,20 +178,20 @@ export default class MafiaOnlineAPIConnection {
    */
   async _sendRequest(data: object = {}, reactToCodes: string | string[], segmentsCount = 1, skipAuthorizationCheck = false): Promise<object | Array<object>> {
     await this._sendData(data, skipAuthorizationCheck)
-    const responseRawSegments = await this._addListenerToQueue(reactToCodes, segmentsCount)
-    const responseSegments = []
-    for (const segment of responseRawSegments) {
-      // let response
-      // try {
-      //   response = JSON.parse(segment)
-      // } catch(e) {
-      //   console.error(response)
-      //   console.log(e)
-      //   throw new MafiaOnlineAPIError('ERRRESPSYNTAX', 'Couldn\'t parse JSON response from server in TCP socket.')
-      // }
-      responseSegments.push(segment)
-    }
-    return responseSegments.length === 1 ? responseSegments[0] : responseSegments
+    const response = await this._addListenerToQueue(reactToCodes, segmentsCount)
+    // const responseSegments = []
+    // for (const segment of responseRawSegments) {
+    //   // let response
+    //   // try {
+    //   //   response = JSON.parse(segment)
+    //   // } catch(e) {
+    //   //   console.error(response)
+    //   //   console.log(e)
+    //   //   throw new MafiaOnlineAPIError('ERRRESPSYNTAX', 'Couldn\'t parse JSON response from server in TCP socket.')
+    //   // }
+    //   responseSegments.push(segment)
+    // }
+    return response.length === 1 ? response[0] : response
   }
 
   _encodeAuthHeader() {
