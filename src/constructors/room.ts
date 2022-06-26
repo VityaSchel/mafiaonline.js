@@ -1,6 +1,6 @@
 import MafiaOnlineAPIBase from '../base.js'
 import { hashPassword } from '../utils.js'
-import ChatMessage from './chatMessage.js'
+import ChatMessage, { MessageType } from './chatMessage.js'
 import PlayerMiniProfile from './playerMiniProfile.js'
 
 /**
@@ -13,12 +13,34 @@ class MafiaRoom {
   joined: boolean
   _join: (roomInstance: MafiaRoom, password?: string) => void
   _leave: (roomInstance: MafiaRoom) => void
-  onMessage?: (message: ChatMessage) => void
+  // onMessage?: (message: ChatMessage) => void
   chatUnsubscribe: () => void
-  super
+  _chatEventsListeners: { onMessage: Array<(msg: object) => void> } = { onMessage: [] }
+  super: MafiaOnlineAPIBase | any
+
+  chat: {
+    on: (event: 'message'/* | 'text_message'*/, callback: (msg: ChatMessage) => void) => void
+    sendText: (msg: string) => void
+  }
 
   constructor(data) {
     this.data = data
+
+    // @ts-expect-error
+    this.chat = {}
+    this.chat.on = (event: 'message'/* | 'text_message'*/, callback: (msg: ChatMessage) => void) => {
+      switch(event) {
+        case 'message':
+          this._chatEventsListeners.onMessage.push(callback)
+          break
+
+        default:
+          break
+      }
+    }
+    this.chat.sendText = (msgText: string) => {
+      this.super._sendData({ ty: 'rmc', m: { ro: this.getID(), tx: msgText, t: 1 } })
+    }
   }
 
   /**
@@ -58,8 +80,7 @@ class MafiaRoom {
   }
 
   async getPlayers(): Promise<PlayerMiniProfile[]> {
-    const base: MafiaOnlineAPIBase = this.super
-    const players: object = await base._sendRequest({ ty: 'gp', ro: this.getID() }, 'pin')
+    const players: object = await this.super._sendRequest({ ty: 'gp', ro: this.getID() }, 'pin')
     return players['pls'].map(playerData => new PlayerMiniProfile(playerData))
   }
 
@@ -68,7 +89,7 @@ class MafiaRoom {
    * @memberof module:mafiaonline.MafiaRoom
    */
   join(password?: string) {
-    this._join(this, hashPassword(password))
+    this._join.bind(this.super)(this, hashPassword(password))
   }
 
   /**
@@ -76,7 +97,18 @@ class MafiaRoom {
    * @memberof module:mafiaonline.MafiaRoom
    */
   leave() {
-    this._leave(this)
+    this._leave.bind(this.super)(this)
+  }
+
+  _onMessage(msg: ChatMessage) {
+    // const broadcastToListeners = (listenersType: string) => this._chatEventsListeners[listenersType].forEach(callback => callback(msg))
+    // TODO: implement more event types
+    // switch (msg.getType()) {
+    //   case '':
+    //     broadcastToListeners('onMessage')
+    //     break
+    // }
+    this._chatEventsListeners.onMessage.forEach(callback => callback(msg))
   }
 }
 

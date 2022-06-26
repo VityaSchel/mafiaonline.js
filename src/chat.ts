@@ -3,7 +3,6 @@ import User from './constructors/user.js'
 import { MafiaOnlineAPIError, banHandler } from './utils.js'
 import ChatMessage from './constructors/chatMessage.js'
 
-
 interface _manageChatArgs {
   onMessage: (msg: ChatMessage) => void
   onLeave?: () => void | Promise<void>
@@ -66,6 +65,7 @@ class MafiaOnlineAPIChat {
       const messages = JSON.parse(response)
       switch (messages.ty) {
         case 'u':
+          console.log(response)
           return
 
         case 'm':
@@ -73,7 +73,7 @@ class MafiaOnlineAPIChat {
           break
 
         case 'ms':
-          messages.ms.forEach(messageIncoming)
+          (messages.ms ?? messages.m).forEach(messageIncoming)
           break
 
         case 'ublk':
@@ -87,7 +87,7 @@ class MafiaOnlineAPIChat {
 
     const messageIncoming = msg => {
       if (messageIDS.includes(msg.c)) return
-      messageIDS.push(msg.c)
+      msg.c !== undefined && messageIDS.push(msg.c)
       onMessage?.(new ChatMessage(msg, subscriptionDate))
     }
 

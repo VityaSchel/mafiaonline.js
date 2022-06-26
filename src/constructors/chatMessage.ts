@@ -1,5 +1,7 @@
 import User from './user.js'
 
+export type MessageType = 'clear_text' | 'join' | 'left' | 'game_started' | 'mafia_in_chat' | 'mafia_choosing_victim' | 'civilian_in_chat' | 'civilian_voting' | 'civilian_vote' | 'clear_text' | '[unknown]' | 'player_killed' | 'civilian_vote' | 'no_one_killed' | 'civilians_won' | 'mafia_won' | 'dead_player_last_message'
+
 /**
  * @class ChatMessage
  * @classdesc Message in chat
@@ -57,7 +59,7 @@ class ChatMessage {
    * @memberof module:mafiaonline.ChatMessage
    * @returns {string} Type of message in chat
    */
-  getType() {
+  getType(): MessageType {
     const types = [
       null,
       'clear_text',
@@ -78,7 +80,7 @@ class ChatMessage {
       'mafia_won',
       'dead_player_last_message',
     ]
-    return types[this.data['t']]
+    return <MessageType> types[this.data['t']]
   }
 }
 

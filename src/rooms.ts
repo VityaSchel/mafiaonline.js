@@ -88,7 +88,7 @@ class MafiaOnlineAPIRooms {
           room.joined = true
           this._sendData({ ty: 'cp', ro: room.getID() })
           const unsubscribe = this._manageChat({
-            onMessage: room.onMessage,
+            onMessage: room._onMessage.bind(room),
             onLeave: () => this._sendData({ ty: 'rp', ro: room.getID() })
           })
           room.chatUnsubscribe = unsubscribe
