@@ -60,7 +60,7 @@ class MafiaRoom {
   async getPlayers(): Promise<PlayerMiniProfile[]> {
     const base: MafiaOnlineAPIBase = this.super
     const players: object = await base._sendRequest({ ty: 'gp', ro: this.getID() }, 'pin')
-    return players['pls']
+    return players['pls'].map(playerData => new PlayerMiniProfile(playerData))
   }
 
   /**

@@ -62,8 +62,6 @@ class MafiaOnlineAPIChat {
   _manageChat({ onMessage, onLeave }: _manageChatArgs): () => Promise<void> {
     const messageIDS = [], subscriptionDate = Date.now()
 
-    this._clientSocket.removeListener('data', this._defaultSocketResponseListener)
-
     const chatListener = this._processRequestResponse(response => {
       const messages = JSON.parse(response)
       switch (messages.ty) {
@@ -96,8 +94,6 @@ class MafiaOnlineAPIChat {
     this._clientSocket.addListener('data', chatListener)
 
     return async () => {
-      this._clientSocket.removeListener('data', chatListener)
-      this._clientSocket.addListener('data', this._defaultSocketResponseListener)
       await onLeave()
     }
   }

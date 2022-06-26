@@ -41,7 +41,7 @@ export default class MafiaOnlineAPIConnection {
     this._defaultSocketResponseListener = this._processRequestResponse(resultStr => {
       this.data.push(resultStr)
       this._dataReceived()
-      this.log('Received response from server:', resultStr)
+      this.logs && this.log('Received response from server:', resultStr)
     })
     this._clientSocket.addListener('data', this._defaultSocketResponseListener)
   }

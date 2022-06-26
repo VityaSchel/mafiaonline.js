@@ -18,7 +18,6 @@ class MafiaOnlineAPIRooms {
 
     const roomIDs = []
 
-    this._clientSocket.removeListener('data', this._defaultSocketResponseListener)
     const roomListener = this._processRequestResponse(response => {
       const json = JSON.parse(response)
       switch(json['ty']) {
@@ -39,7 +38,6 @@ class MafiaOnlineAPIRooms {
       if (!this.monitoringRooms) return
       this.monitoringRooms = false
       this._clientSocket.removeListener('data', roomListener)
-      this._clientSocket.addListener('data', this._defaultSocketResponseListener)
     }
 
     const processRoom = room => {
@@ -75,7 +73,6 @@ class MafiaOnlineAPIRooms {
     if(this.monitoringRooms) {
       this.monitoringRooms = false
       this._clientSocket.removeListener('data', this._roomListener)
-      this._clientSocket.addListener('data', this._defaultSocketResponseListener)
     }
 
     const result = await this._sendRequest({ ty: 're', psw: password, ro: room.getID() }, 're')
