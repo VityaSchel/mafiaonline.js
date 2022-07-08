@@ -44,15 +44,17 @@ const mafiaOnlineAPI = new MafiaOnlineAPI({ email: 'test@example.com', password:
 
 ## Документация
 
-API reference: [docs/api-reference.md](./docs/api-reference.md)
+[API reference](https://github.com/VityaSchel/mafiaonline.js/wiki/API-Reference)
+
+[Другая информация про API](https://github.com/VityaSchel/mafiaonline.js/wiki)
 
 ## Примеры
 
-Список примеров и описание: [docs/examples.md](./docs/examples.md)
+[Список примеров и описание](https://github.com/VityaSchel/mafiaonline.js/wiki/Примеры)
 
 Примеры можно найти в папке [examples](./examples/)
 
-**Если вы хотите увидеть, как сделать бота в глобальном чате, посмотрите [examples/examples.md#global-chat-bot](./examples/examples.md#global-chat-bot)**
+**Если вы хотите увидеть, как сделать бота в глобальном чате, посмотрите [вики](https://github.com/VityaSchel/mafiaonline.js/wiki/%D0%9F%D1%80%D0%B8%D0%BC%D0%B5%D1%80%D1%8B#global-chat-bot)**
 
 ## Предупреждения
 
