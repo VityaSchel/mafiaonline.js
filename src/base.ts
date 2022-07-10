@@ -34,7 +34,7 @@ export interface MafiaOnlineAPIClassDeclarations {
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
-  constructor(credentials: MafiaOnlineAPICredentials, verboseLogs = false) {
+  constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean | string[] = false) {
     let tokenCredentials
     if (credentials.token && credentials.userID){
       tokenCredentials = true
@@ -46,8 +46,14 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
       throw new MafiaOnlineAPIError('ERRCOSTRUCTOR', 'Error while initializing class: credentials must be one of { token: string, userID: string } or { email: string, password: string }')
     }
 
-    this.logs = verboseLogs
-    if(this.logs) console.log('To stop MafiaOnline.js from logging debug into console, pass false as second argument to constructor.')
+    this.log = (...messages) => {
+      if (!this.logs || verboseLogs === false) return
+      if (verboseLogs === true) console.log((new Date()).toISOString(), 'Mafiaonline.js:', ...messages)
+      else verboseLogs.push(`${new Date().toISOString()} Mafiaonline.js: ${messages.join(' ')})`)
+    }
+
+    this.logs = verboseLogs === false || Array.isArray(verboseLogs)
+    if(this.logs) this.log('To stop MafiaOnline.js from logging debug into console, pass false as second argument to constructor.')
 
     this.account = null
     this.token = null
@@ -87,10 +93,6 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   deviceID: string
   data: string[]
   _closed: boolean
-
-  log(...messages) {
-    if(this.logs) console.log((new Date()).toISOString(), 'Mafiaonline.js:', ...messages)
-  }
 
   /**
    * Closes current socket and cleans up all stuff. Does not delete session, use signOut() before close()!
