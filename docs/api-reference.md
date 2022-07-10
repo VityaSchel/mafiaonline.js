@@ -21,6 +21,8 @@
         * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
         * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
         * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
+        * [.MafiaRoom#getMinimumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumPlayers) ⇒ <code>number</code>
+        * [.MafiaRoom#getMaximumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMaximumPlayers) ⇒ <code>number</code>
         * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
         * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
         * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
@@ -166,6 +168,8 @@
     * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
     * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
     * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
+    * [.MafiaRoom#getMinimumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumPlayers) ⇒ <code>number</code>
+    * [.MafiaRoom#getMaximumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMaximumPlayers) ⇒ <code>number</code>
     * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
     * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
     * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
@@ -191,6 +195,20 @@
 
 **Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
 **Returns**: <code>number</code> - <p>Minimum level for room</p>  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumPlayers"></a>
+
+#### MafiaRoom.MafiaRoom#getMinimumPlayers() ⇒ <code>number</code>
+<p>Get minimum number of players required to start the game</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+**Returns**: <code>number</code> - <p>Minimum number of players</p>  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+getMaximumPlayers"></a>
+
+#### MafiaRoom.MafiaRoom#getMaximumPlayers() ⇒ <code>number</code>
+<p>Get maximum number of players that can join the room</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+**Returns**: <code>number</code> - <p>Maximum number of players</p>  
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected"></a>
 
 #### MafiaRoom.MafiaRoom#isPasswordProtected() ⇒ <code>boolean</code>

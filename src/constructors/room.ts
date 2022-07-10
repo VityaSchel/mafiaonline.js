@@ -71,6 +71,24 @@ class MafiaRoom {
   }
 
   /**
+   * Get minimum number of players required to start the game
+   * @memberof module:mafiaonline.MafiaRoom
+   * @returns {number} Minimum number of players
+   */
+  getMinimumPlayers(): number {
+    return this.data.mnp
+  }
+
+  /**
+   * Get maximum number of players that can join the room
+   * @memberof module:mafiaonline.MafiaRoom
+   * @returns {number} Maximum number of players
+   */
+  getMaximumPlayers(): number {
+    return this.data.mxp
+  }
+
+  /**
    * Returns true is room is password protected
    * @memberof module:mafiaonline.MafiaRoom
    * @returns {boolean}
