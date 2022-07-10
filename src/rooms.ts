@@ -55,7 +55,7 @@ class MafiaOnlineAPIRooms {
           break
 
         case 'gsrl':
-          eventSystem.internal.broadcast('updatePlayersInRoom', json['ro'], json['n'])
+          eventSystem.internal.broadcast('updateRoomStatus', json['ro'], json['s'])
           break
 
         default:

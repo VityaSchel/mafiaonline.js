@@ -45,7 +45,7 @@
     * [.MafiaOnlineAPIChat#joinGlobalChat(callback)](#module_mafiaonline.MafiaOnlineAPIChat+joinGlobalChat) ⇒ <code>function</code>
     * [.MafiaOnlineAPIChat#sendToGlobalChat(content, messageStyle)](#module_mafiaonline.MafiaOnlineAPIChat+sendToGlobalChat)
     * [.MafiaOnlineAPIChat#_manageChat(events)](#module_mafiaonline.MafiaOnlineAPIChat+_manageChat) ⇒ <code>function</code>
-    * [.MafiaOnlineAPIRooms#startRoomMonitoring([addCallback], [removeCallback])](#module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring) ⇒ <code>object</code> \| <code>function</code> \| <code>function</code>
+    * [.MafiaOnlineAPIRooms#startRoomMonitoring()](#module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring) ⇒ <code>object</code> \| <code>function</code> \| <code>function</code> \| <code>function</code> \| <code>function</code>
     * [.MafiaOnlineAPIRooms#joinRoom(room, [password])](#module_mafiaonline.MafiaOnlineAPIRooms+joinRoom)
     * [.MafiaOnlineAPIRooms#leaveRoom(room)](#module_mafiaonline.MafiaOnlineAPIRooms+leaveRoom)
 
@@ -400,17 +400,11 @@
 
 <a name="module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring"></a>
 
-### MafiaOnlineAPI.MafiaOnlineAPIRooms#startRoomMonitoring([addCallback], [removeCallback]) ⇒ <code>object</code> \| <code>function</code> \| <code>function</code>
+### MafiaOnlineAPI.MafiaOnlineAPIRooms#startRoomMonitoring() ⇒ <code>object</code> \| <code>function</code> \| <code>function</code> \| <code>function</code> \| <code>function</code>
 <p>Get rooms list and subscribe for changes</p>
 
 **Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
-**Returns**: <code>object</code> - <p>result Returning object</p><code>function</code> - <p>result.unsubscribe Function to unsubscribe. Always unsubscribe when you're not using monitoring!</p><code>function</code> - <p>result.getRooms Get updating array of rooms (local cache, not request)</p>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [addCallback] | <code>function</code> | <p>Optional. Callback that gets called when new room appears with argument of type Room</p> |
-| [removeCallback] | <code>function</code> | <p>Optional. Callback that gets called when new room appears with argument of type Room</p> |
-
+**Returns**: <code>object</code> - <p>result Returning object</p><code>function</code> - <p>result.unsubscribe Function to unsubscribe. Always unsubscribe when you're not using monitoring!</p><code>function</code> - <p>result.getRooms Get updating array of rooms (local cache, not request)</p><code>function</code> - <p>result.addEventListener Subscribe to updates of specified event type ('addRoom': (room: MafiaRoom) =&gt; void; 'removeRoom': (room: MafiaRoom) =&gt; void; 'updatePlayersInRoom': (roomID: string, players: number) =&gt; void; 'updateRoomStatus': (roomID: string, status: number) =&gt; void)</p><code>function</code> - <p>result.removeEventListener Unsubscribe from updates of specified event type</p>  
 <a name="module_mafiaonline.MafiaOnlineAPIRooms+joinRoom"></a>
 
 ### MafiaOnlineAPI.MafiaOnlineAPIRooms#joinRoom(room, [password])
