@@ -1,7 +1,7 @@
 import MafiaOnlineAPIConnection from './connection.js'
 import MafiaOnlineAPIChat from './chat.js'
-import Room from './constructors/room.js'
 import { MafiaOnlineAPIError } from './utils.js'
+import MafiaRoom from './constructors/room.js'
 
 class MafiaOnlineAPIRooms {
   monitoringRooms = false
@@ -10,19 +10,33 @@ class MafiaOnlineAPIRooms {
   /**
    * Get rooms list and subscribe for changes
    * @memberof module:mafiaonline
-   * @param callback Callback that gets called with argument of type Room
-   * @returns {function} Function to unsubscribe
+   * @param {function} [addCallback] Optional. Callback that gets called when new room appears with argument of type Room
+   * @param {function} [removeCallback] Optional. Callback that gets called when new room appears with argument of type Room
+   * @returns {object} result Returning object
+   * @returns {function} result.unsubscribe Function to unsubscribe. Always unsubscribe when you're not using monitoring!
+   * @returns {function} result.getRooms Get updating array of rooms (local cache, not request)
    */
-  async startRoomMonitoring(callback: (room: Room) => void): Promise<() => void> {
+  async startRoomMonitoring(
+    addCallback?: (room: MafiaRoom) => void, 
+    removeCallback?: (room: MafiaRoom) => void
+  ): Promise<{ unsubscribe: () => void, getRooms: () => MafiaRoom[] }> {
     await this._waitForReadyState()
 
-    const roomIDs = []
+    let rooms: MafiaRoom[] = []
 
     const roomListener = this._processRequestResponse(response => {
       const json = JSON.parse(response)
       switch(json['ty']) {
         case 'rs':
           json['rs'].forEach(processRoom)
+          break
+
+        case 'rm':
+          (() => {
+            const removedRoom = rooms.find(room => room.getID() === json['ro'])
+            rooms = rooms.filter(room => room.getID() !== json['ro'])
+            removeCallback(removedRoom)
+          })()
           break
 
         case 'add':
@@ -37,18 +51,19 @@ class MafiaOnlineAPIRooms {
     const stopMonitoring = () => {
       if (!this.monitoringRooms) return
       this.monitoringRooms = false
+      rooms = null
       this._clientSocket.removeListener('data', roomListener)
     }
 
-    const processRoom = room => {
-      if(roomIDs.includes(room.o)) return
+    const processRoom = (room: object) => {
+      if (rooms.some(room => room.getID() === room['o'])) return
 
-      roomIDs.push(room.o)
-      const roomInstance = new Room(room)
+      const roomInstance = new MafiaRoom(room)
+      rooms.push(roomInstance)
       roomInstance._join = this.joinRoom
       roomInstance._leave = this.leaveRoom
       roomInstance.super = this
-      callback(roomInstance)
+      addCallback(roomInstance)
     }
 
     this._roomListener = roomListener
@@ -57,9 +72,12 @@ class MafiaOnlineAPIRooms {
     this.log('Subscribed to room monitoring')
     this._sendData({ ty: 'acrl' })
 
-    return async () => {
-      stopMonitoring()
-      await this._sendRequest({ ty: 'acd' }, 'uud')
+    return {
+      unsubscribe: async () => {
+        stopMonitoring()
+        await this._sendRequest({ ty: 'acd' }, 'uud')
+      },
+      getRooms: () => rooms
     }
   }
 
@@ -69,7 +87,7 @@ class MafiaOnlineAPIRooms {
    * @param {Room} room Room instance. Must be obtained from monitoring by calling startRoomMonitoring() function
    * @param {string} [password] Optional. Password in clear text, hashing is done on library side
    */
-  async joinRoom(room: Room, password = '') {
+  async joinRoom(room: MafiaRoom, password = '') {
     if(this.monitoringRooms) {
       this.monitoringRooms = false
       this._clientSocket.removeListener('data', this._roomListener)
@@ -105,7 +123,7 @@ class MafiaOnlineAPIRooms {
    * @memberof module:mafiaonline
    * @param {Room} room Room instance. Must be obtained from monitoring by calling startRoomMonitoring() function
    */
-  async leaveRoom(room: Room) {
+  async leaveRoom(room: MafiaRoom) {
     await room.chatUnsubscribe()
   }
 }
