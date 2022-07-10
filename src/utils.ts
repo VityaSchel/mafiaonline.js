@@ -1,7 +1,7 @@
 // @ts-nocheck
 import md5 from 'md5'
 import fetch from 'node-fetch'
-import * as consts from './constants.js'
+import * as consts from './data/constants.js'
 
 export const aggregation = (baseClass, ...mixins): any => {
   class base extends baseClass {

@@ -293,3 +293,10 @@ export const API_KEYS = {
   YOUR_FRIENDSHIP_LIST_FULL: 'yflf',
   _ID_KEY: 'i'
 }
+
+export const host = '37.143.8.68'
+
+export const ports = {
+  restAPI: 8008,
+  sockets: 8090
+}

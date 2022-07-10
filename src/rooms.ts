@@ -2,6 +2,9 @@ import MafiaOnlineAPIConnection from './connection.js'
 import MafiaOnlineAPIChat from './chat.js'
 import { MafiaOnlineAPIError } from './utils.js'
 import MafiaRoom from './constructors/room.js'
+import setupEventSystem from './helpers/_eventsSystem.js'
+
+type RoomsListEvent = 'addRoom' | 'removeRoom' | 'updatePlayersInRoom' | 'updateRoomStatus'
 
 class MafiaOnlineAPIRooms {
   monitoringRooms = false
@@ -10,19 +13,23 @@ class MafiaOnlineAPIRooms {
   /**
    * Get rooms list and subscribe for changes
    * @memberof module:mafiaonline
-   * @param {function} [addCallback] Optional. Callback that gets called when new room appears with argument of type Room
-   * @param {function} [removeCallback] Optional. Callback that gets called when new room appears with argument of type Room
    * @returns {object} result Returning object
    * @returns {function} result.unsubscribe Function to unsubscribe. Always unsubscribe when you're not using monitoring!
    * @returns {function} result.getRooms Get updating array of rooms (local cache, not request)
+   * @returns {function} result.addEventListener Subscribe to updates of specified event type ('addRoom': (room: MafiaRoom) => void; 'removeRoom': (room: MafiaRoom) => void; 'updatePlayersInRoom': (roomID: string, players: number) => void; 'updateRoomStatus': (roomID: string, status: number) => void)
+   * @returns {function} result.removeEventListener Unsubscribe from updates of specified event type 
    */
-  async startRoomMonitoring(
-    addCallback?: (room: MafiaRoom) => void, 
-    removeCallback?: (room: MafiaRoom) => void
-  ): Promise<{ unsubscribe: () => void, getRooms: () => MafiaRoom[] }> {
+  async startRoomMonitoring(): Promise<{ 
+    unsubscribe: () => void, 
+    getRooms: () => MafiaRoom[], 
+    addEventListener: (eventType: RoomsListEvent, callback: () => void) => void,
+    removeEventListener: (eventType: RoomsListEvent, callback: () => void) => void
+  }> {
     await this._waitForReadyState()
 
     let rooms: MafiaRoom[] = []
+    
+    const eventSystem = setupEventSystem(['addRoom', 'removeRoom', 'updatePlayersInRoom', 'updateRoomStatus'])
 
     const roomListener = this._processRequestResponse(response => {
       const json = JSON.parse(response)
@@ -35,12 +42,20 @@ class MafiaOnlineAPIRooms {
           (() => {
             const removedRoom = rooms.find(room => room.getID() === json['ro'])
             rooms = rooms.filter(room => room.getID() !== json['ro'])
-            removeCallback(removedRoom)
+            eventSystem.internal.broadcast('removeRoom', removedRoom)
           })()
           break
 
         case 'add':
           processRoom(json['rr'])
+          break
+
+        case 'pn':
+          eventSystem.internal.broadcast('updatePlayersInRoom', json['ro'], json['n'])
+          break
+
+        case 'gsrl':
+          eventSystem.internal.broadcast('updatePlayersInRoom', json['ro'], json['n'])
           break
 
         default:
@@ -63,7 +78,7 @@ class MafiaOnlineAPIRooms {
       roomInstance._join = this.joinRoom
       roomInstance._leave = this.leaveRoom
       roomInstance.super = this
-      addCallback(roomInstance)
+      eventSystem.internal.broadcast('addRoom', roomInstance)
     }
 
     this._roomListener = roomListener
@@ -77,7 +92,9 @@ class MafiaOnlineAPIRooms {
         stopMonitoring()
         await this._sendRequest({ ty: 'acd' }, 'uud')
       },
-      getRooms: () => rooms
+      getRooms: () => rooms,
+      addEventListener: eventSystem.external.addEventListener,
+      removeEventListener: eventSystem.external.removeEventListener
     }
   }
 
