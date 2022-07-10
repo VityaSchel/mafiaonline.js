@@ -300,3 +300,23 @@ export const ports = {
   restAPI: 8008,
   sockets: 8090
 }
+
+export const ROLES = {
+  // ADMIN: 2,
+  BARMAN: 10,
+  BODYGUARD: 9,
+  CIVILIAN: 1,
+  DOCTOR: 2,
+  JOURNALIST: 8,
+  // KILLER: 6,
+  // LAWYER: 11,
+  LOVER: 5,
+  MAFIA: 4,
+  // MARTYR: 12,
+  // MODERATOR: 1,
+  // PRIEST: 14,
+  SHERIFF: 3,
+  SPY: 13,
+  TERRORIST: 7,
+  // USER: 0,
+}

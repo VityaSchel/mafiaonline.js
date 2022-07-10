@@ -3,6 +3,7 @@ import MafiaOnlineAPIChat from './chat.js'
 import { MafiaOnlineAPIError } from './utils.js'
 import MafiaRoom from './constructors/room.js'
 import setupEventSystem from './helpers/_eventsSystem.js'
+import ChatMessage from './constructors/chatMessage.js'
 
 type RoomsListEvent = 'addRoom' | 'removeRoom' | 'updatePlayersInRoom' | 'updateRoomStatus'
 
@@ -110,6 +111,44 @@ class MafiaOnlineAPIRooms {
       this._clientSocket.removeListener('data', this._roomListener)
     }
 
+    const joined = () => {
+      room.joined = true
+      this._sendData({ ty: 'cp', ro: room.getID() })
+      const unsubscribe = this._manageChat({
+        onMessage: (msg: ChatMessage) => room._eventsSystem.internal.broadcast('message', msg),
+        onLeave: () => this._sendData({ ty: 'rp', ro: room.getID() })
+      })
+
+      const roomEventsListener = this._processRequestResponse(response => {
+        const json = JSON.parse(response)
+        switch(json['ty']) {
+          case 'roles':
+            room.roles = json['roles']
+            break
+
+          case 'gd':
+          case 'gs':
+            room._eventsSystem.internal.broadcast('phaseChange', { 
+              0: 'nighttime_chat', 
+              1: 'nighttime_vote',
+              2: 'daytime_chat',
+              3: 'daytime_vote'
+            }[json['d']])
+            break
+
+          default:
+            break
+        }
+      })
+
+      this._clientSocket.addListener('data', roomEventsListener)
+
+      room.chatUnsubscribe = unsubscribe
+      room.eventsUnsubscribe = () => {
+        this._clientSocket.removeListener('data', roomEventsListener)
+      }
+    }
+
     const result = await this._sendRequest({ ty: 're', psw: password, ro: room.getID() }, 're')
     switch (result['ty']) {
       case 'rpiw':
@@ -119,15 +158,7 @@ class MafiaOnlineAPIRooms {
         throw new MafiaOnlineAPIError('ERRULNE', 'Your level is not high enough to join this room')
   
       case 're':
-        (() => {
-          room.joined = true
-          this._sendData({ ty: 'cp', ro: room.getID() })
-          const unsubscribe = this._manageChat({
-            onMessage: room._onMessage.bind(room),
-            onLeave: () => this._sendData({ ty: 'rp', ro: room.getID() })
-          })
-          room.chatUnsubscribe = unsubscribe
-        })()
+        joined()
         return true
   
       default:
@@ -142,6 +173,7 @@ class MafiaOnlineAPIRooms {
    */
   async leaveRoom(room: MafiaRoom) {
     await room.chatUnsubscribe()
+    await room.eventsUnsubscribe()
   }
 }
 

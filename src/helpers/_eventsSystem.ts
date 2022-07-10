@@ -1,11 +1,21 @@
+export type EventsSystem = {
+  internal: {
+    broadcast: (eventType: EventType, ...payload: any) => void
+  },
+  external: {
+    addEventListener: (eventType: EventType, callback: ListenerCallback) => void
+    removeEventListener: (eventType: EventType, callback: ListenerCallback) => void
+  }
+}
+
+type EventType = string
+type ListenerCallback = (...payload: any) => void
+
 /**
  * FOR INTERNAL USE ONLY.
  * Setup event system.
  */
-export default function setupEventSystem(eventTypes: string[]) {
-  type EventType = typeof eventTypes[number]
-  type ListenerCallback = (...payload: any) => void
-
+export default function setupEventSystem(eventTypes: string[]): EventsSystem {
   const listeners: { [key: EventType]: ListenerCallback[] } = Object.fromEntries(
     eventTypes.map((event: EventType) => [event, []])
   )
