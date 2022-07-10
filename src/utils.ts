@@ -49,7 +49,7 @@ export function hashPassword(password: string): string {
  * @param {string} deviceID Device ID of Android, can be any random string
  * @returns {object} Response from REST API
  */
-export async function signUp(/*nickname: string, */email: string, password: string, language = 'RUS', deviceID = '0') {
+export async function signUp(/*nickname: string, */email: string, password: string, language = 'RUS', deviceID = '0'): Promise<{ error: string, t: string }> {
   const response = await fetch(`http://${consts.host}:${consts.ports.restAPI}/user/sign_up`, {
     method: 'POST',
     body: new URLSearchParams({
