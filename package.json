@@ -27,6 +27,7 @@
   "homepage": "https://github.com/VityaSchel/mafiaonline.js#readme",
   "dependencies": {
     "eslint-plugin-jest": "^26.1.5",
+    "just-clone": "^6.0.1",
     "md5": "^2.3.0",
     "nanoid": "^3.3.3",
     "node-fetch": "^3.2.3"

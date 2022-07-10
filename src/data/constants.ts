@@ -301,7 +301,7 @@ export const ports = {
   sockets: 8090
 }
 
-export const ROLES = {
+export const EXPORTED_ROLES = {
   // ADMIN: 2,
   BARMAN: 10,
   BODYGUARD: 9,
@@ -320,3 +320,16 @@ export const ROLES = {
   TERRORIST: 7,
   // USER: 0,
 }
+
+export const API_ROLES_KEYS = {
+  1: 'civilian',
+  2: 'doctor',
+  3: 'sheriff',
+  4: 'mafia',
+  5: 'lover',
+  7: 'terrorist',
+  8: 'journalist',
+  9: 'bodyguard',
+  10: 'barman',
+  13: 'spy'
+} as const

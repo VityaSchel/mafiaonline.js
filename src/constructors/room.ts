@@ -3,6 +3,7 @@ import setupEventSystem, { EventsSystem } from '../helpers/_eventsSystem.js'
 import { hashPassword } from '../utils.js'
 // import ChatMessage, { MessageType } from './chatMessage.js'
 import PlayerMiniProfile from './playerMiniProfile.js'
+import { API_ROLES_KEYS } from '../data/constants.js'
 
 type EventType = 'message' | 'gameStarted' | 'rolesRevealed' | 'phaseChange'
 
@@ -16,15 +17,15 @@ class MafiaRoom {
   joined: boolean
   _join: (roomInstance: MafiaRoom, password?: string) => void
   _leave: (roomInstance: MafiaRoom) => void
-  // onMessage?: (message: ChatMessage) => void
   chatUnsubscribe: () => void
   eventsUnsubscribe: () => void
   _eventsSystem: EventsSystem
-  // _chatEventsListeners: { onMessage: Array<(msg: object) => void> } = { onMessage: [] }
   super: MafiaOnlineAPIBase | any
+  roles: { userID: string, roleID: typeof API_ROLES_KEYS[keyof typeof API_ROLES_KEYS] }[]
+  deadPlayers: string[]
 
   /**
-   * Subscribe to events ('message': (msg: ChatMessage) => void; 'gameStarted': () => void; 'rolesRevealed': (roleID: number, userID: string) => void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') => void)
+   * Subscribe to events ('message': (msg: ChatMessage) => void; 'gameStarted': () => void; 'roleRevealed': (roleID: number, userID: string) => void; 'playerDied': (userID: string) => void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') => void)
    * @memberof module:mafiaonline.MafiaRoom
    */
   addEventListener: (eventType: EventType, callback: () => void) => void

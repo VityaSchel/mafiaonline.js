@@ -4,6 +4,8 @@ import { MafiaOnlineAPIError } from './utils.js'
 import MafiaRoom from './constructors/room.js'
 import setupEventSystem from './helpers/_eventsSystem.js'
 import ChatMessage from './constructors/chatMessage.js'
+import { API_ROLES_KEYS } from './data/constants.js'
+import clone from 'just-clone'
 
 type RoomsListEvent = 'addRoom' | 'removeRoom' | 'updatePlayersInRoom' | 'updateRoomStatus'
 
@@ -123,7 +125,21 @@ class MafiaOnlineAPIRooms {
         const json = JSON.parse(response)
         switch(json['ty']) {
           case 'roles':
-            room.roles = json['roles']
+            room.roles = room.roles.concat(json['roles'].map(role => ({ roleID: API_ROLES_KEYS[role.r], userID: role.uo })))
+            break
+
+          case 'ud':
+            (() => {
+              const _roles = clone(room.roles)
+              room.roles = json['data'].map(user => ({ roleID: user.r, userID: user.uo }))
+              const newRevealedRoles = room.roles.filter(role => !_roles.some(r => r.userID === role.userID) )
+              newRevealedRoles.forEach(role => room._eventsSystem.internal.broadcast('roleRevealed', role.roleID, role.userID))
+
+              const _deadPlayers = clone(room.deadPlayers)
+              room.deadPlayers = json['data'].filter(user => !user.a).map(user => user.uo)
+              const newDeadPlayers = room.deadPlayers.filter(playerID => !_deadPlayers.some(id => id === playerID))
+              newDeadPlayers.forEach(userID => room._eventsSystem.internal.broadcast('playerDied', userID))
+            })
             break
 
           case 'gd':
