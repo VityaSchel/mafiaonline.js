@@ -4,6 +4,7 @@ import { hashPassword } from '../utils.js'
 // import ChatMessage, { MessageType } from './chatMessage.js'
 import PlayerMiniProfile from './playerMiniProfile.js'
 import { API_ROLES_KEYS } from '../data/constants.js'
+import MafiaUser from './user.js'
 
 type EventType = 'message' | 'gameStarted' | 'rolesRevealed' | 'phaseChange'
 
@@ -25,7 +26,7 @@ class MafiaRoom {
   deadPlayers: string[]
 
   /**
-   * Subscribe to events ('message': (msg: ChatMessage) => void; 'gameStarted': () => void; 'roleRevealed': (roleID: number, userID: string) => void; 'playerDied': (userID: string) => void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') => void)
+   * Subscribe to events ('message': (msg: ChatMessage) => void; 'gameStarted': () => void; 'roleRevealed': (roleID: number, userID: string) => void; 'playerDied': (userID: string) => void; 'newVoteForPlayer': (userID: string, votes: number) => void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') => void)
    * @memberof module:mafiaonline.MafiaRoom
    */
   addEventListener: (eventType: EventType, callback: () => void) => void
@@ -119,16 +120,13 @@ class MafiaRoom {
     this._leave.bind(this.super)(this)
   }
 
-  // _onMessage(msg: ChatMessage) {
-  //   // const broadcastToListeners = (listenersType: string) => this._chatEventsListeners[listenersType].forEach(callback => callback(msg))
-  //   // TODO: implement more event types
-  //   // switch (msg.getType()) {
-  //   //   case '':
-  //   //     broadcastToListeners('onMessage')
-  //   //     break
-  //   // }
-  //   // this._chatEventsListeners.onMessage.forEach(callback => callback(msg))
-  // }
+  /**
+   * Vote for player in second phase (daytime and nighttime)
+   * @memberof module:mafiaonline.MafiaRoom
+   */
+  async voteForPlayer(userID: string) {
+    this.super._sendData({ ty: 'vpl', uo: userID })
+  }
 }
 
 export default MafiaRoom

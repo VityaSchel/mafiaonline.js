@@ -130,16 +130,25 @@ class MafiaOnlineAPIRooms {
 
           case 'ud':
             (() => {
-              const _roles = clone(room.roles)
-              room.roles = json['data'].map(user => ({ roleID: user.r, userID: user.uo }))
-              const newRevealedRoles = room.roles.filter(role => !_roles.some(r => r.userID === role.userID) )
-              newRevealedRoles.forEach(role => room._eventsSystem.internal.broadcast('roleRevealed', role.roleID, role.userID))
+              const testPlayer = json['data'][0]
+              const playersDiedEvent = testPlayer['a']
+              const newVoteForPlayerEvent = testPlayer['v']
+              if (playersDiedEvent) {
+                const _roles = clone(room.roles)
+                room.roles = json['data'].map(user => ({ roleID: user.r, userID: user.uo }))
+                const newRevealedRoles = room.roles.filter(role => !_roles.some(r => r.userID === role.userID) )
+                newRevealedRoles.forEach(role => room._eventsSystem.internal.broadcast('roleRevealed', role.roleID, role.userID))
 
-              const _deadPlayers = clone(room.deadPlayers)
-              room.deadPlayers = json['data'].filter(user => !user.a).map(user => user.uo)
-              const newDeadPlayers = room.deadPlayers.filter(playerID => !_deadPlayers.some(id => id === playerID))
-              newDeadPlayers.forEach(userID => room._eventsSystem.internal.broadcast('playerDied', userID))
-            })
+                const _deadPlayers = clone(room.deadPlayers)
+                room.deadPlayers = json['data'].filter(user => !user.a).map(user => user.uo)
+                const newDeadPlayers = room.deadPlayers.filter(playerID => !_deadPlayers.some(id => id === playerID))
+                newDeadPlayers.forEach(userID => room._eventsSystem.internal.broadcast('playerDied', userID))
+              } else if (newVoteForPlayerEvent) {
+                json['data'].forEach(player => {
+                  room._eventsSystem.internal.broadcast('newVoteForPlayer', player['uo'], player['v'])
+                })
+              }
+            })()
             break
 
           case 'gd':
