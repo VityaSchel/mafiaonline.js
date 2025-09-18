@@ -1,7 +1,7 @@
 import { MafiaOnlineAPICredentials } from './base.js'
 import MafiaUser from './constructors/user.js'
 import fetch from 'node-fetch'
-import * as consts from './constants.js'
+import * as consts from './data/constants.js'
 import * as net from 'net'
 import { MafiaOnlineAPIError, banHandler } from './utils.js'
 

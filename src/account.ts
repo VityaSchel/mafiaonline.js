@@ -15,7 +15,7 @@ class MafiaOnlineAPIAccount {
    */
   async getUser(): Promise<MafiaUser> {
     const user = await this._sendRequest({ ty: 'acd' }, 'uud')
-    this.account = new MafiaUser(user[0]['uu'])
+    this.account = new MafiaUser(user['uud'])
     return this.account
   }
 

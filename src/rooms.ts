@@ -1,7 +1,13 @@
 import MafiaOnlineAPIConnection from './connection.js'
 import MafiaOnlineAPIChat from './chat.js'
-import Room from './constructors/room.js'
 import { MafiaOnlineAPIError } from './utils.js'
+import MafiaRoom from './constructors/room.js'
+import setupEventSystem from './helpers/_eventsSystem.js'
+import ChatMessage from './constructors/chatMessage.js'
+import { API_ROLES_KEYS } from './data/constants.js'
+import clone from 'just-clone'
+
+type RoomsListEvent = 'addRoom' | 'removeRoom' | 'updatePlayersInRoom' | 'updateRoomStatus'
 
 class MafiaOnlineAPIRooms {
   monitoringRooms = false
@@ -10,13 +16,23 @@ class MafiaOnlineAPIRooms {
   /**
    * Get rooms list and subscribe for changes
    * @memberof module:mafiaonline
-   * @param callback Callback that gets called with argument of type Room
-   * @returns {function} Function to unsubscribe
+   * @returns {object} result Returning object
+   * @returns {function} result.unsubscribe Function to unsubscribe. Always unsubscribe when you're not using monitoring!
+   * @returns {function} result.getRooms Get updating array of rooms (local cache, not request)
+   * @returns {function} result.addEventListener Subscribe to updates of specified event type ('addRoom': (room: MafiaRoom) => void; 'removeRoom': (room: MafiaRoom) => void; 'updatePlayersInRoom': (roomID: string, players: number) => void; 'updateRoomStatus': (roomID: string, status: number) => void)
+   * @returns {function} result.removeEventListener Unsubscribe from updates of specified event type 
    */
-  async startRoomMonitoring(callback: (room: Room) => void): Promise<() => void> {
+  async startRoomMonitoring(): Promise<{ 
+    unsubscribe: () => void, 
+    getRooms: () => MafiaRoom[], 
+    addEventListener: (eventType: RoomsListEvent, callback: () => void) => void,
+    removeEventListener: (eventType: RoomsListEvent, callback: () => void) => void
+  }> {
     await this._waitForReadyState()
 
-    const roomIDs = []
+    let rooms: MafiaRoom[] = []
+    
+    const eventSystem = setupEventSystem(['addRoom', 'removeRoom', 'updatePlayersInRoom', 'updateRoomStatus'])
 
     const roomListener = this._processRequestResponse(response => {
       const json = JSON.parse(response)
@@ -25,8 +41,24 @@ class MafiaOnlineAPIRooms {
           json['rs'].forEach(processRoom)
           break
 
+        case 'rm':
+          (() => {
+            const removedRoom = rooms.find(room => room.getID() === json['ro'])
+            rooms = rooms.filter(room => room.getID() !== json['ro'])
+            eventSystem.internal.broadcast('removeRoom', removedRoom)
+          })()
+          break
+
         case 'add':
           processRoom(json['rr'])
+          break
+
+        case 'pn':
+          eventSystem.internal.broadcast('updatePlayersInRoom', json['ro'], json['n'])
+          break
+
+        case 'gsrl':
+          eventSystem.internal.broadcast('updateRoomStatus', json['ro'], json['s'])
           break
 
         default:
@@ -37,18 +69,19 @@ class MafiaOnlineAPIRooms {
     const stopMonitoring = () => {
       if (!this.monitoringRooms) return
       this.monitoringRooms = false
+      rooms = null
       this._clientSocket.removeListener('data', roomListener)
     }
 
-    const processRoom = room => {
-      if(roomIDs.includes(room.o)) return
+    const processRoom = (room: object) => {
+      if (rooms.some(room => room.getID() === room['o'])) return
 
-      roomIDs.push(room.o)
-      const roomInstance = new Room(room)
+      const roomInstance = new MafiaRoom(room)
+      rooms.push(roomInstance)
       roomInstance._join = this.joinRoom
       roomInstance._leave = this.leaveRoom
       roomInstance.super = this
-      callback(roomInstance)
+      eventSystem.internal.broadcast('addRoom', roomInstance)
     }
 
     this._roomListener = roomListener
@@ -57,9 +90,14 @@ class MafiaOnlineAPIRooms {
     this.log('Subscribed to room monitoring')
     this._sendData({ ty: 'acrl' })
 
-    return async () => {
-      stopMonitoring()
-      await this._sendRequest({ ty: 'acd' }, 'uud')
+    return {
+      unsubscribe: async () => {
+        stopMonitoring()
+        await this._sendRequest({ ty: 'acd' }, 'uud')
+      },
+      getRooms: () => rooms,
+      addEventListener: eventSystem.external.addEventListener,
+      removeEventListener: eventSystem.external.removeEventListener
     }
   }
 
@@ -69,10 +107,71 @@ class MafiaOnlineAPIRooms {
    * @param {Room} room Room instance. Must be obtained from monitoring by calling startRoomMonitoring() function
    * @param {string} [password] Optional. Password in clear text, hashing is done on library side
    */
-  async joinRoom(room: Room, password = '') {
+  async joinRoom(room: MafiaRoom, password = '') {
     if(this.monitoringRooms) {
       this.monitoringRooms = false
       this._clientSocket.removeListener('data', this._roomListener)
+    }
+
+    const joined = () => {
+      room.joined = true
+      this._sendData({ ty: 'cp', ro: room.getID() })
+      const unsubscribe = this._manageChat({
+        onMessage: (msg: ChatMessage) => room._eventsSystem.internal.broadcast('message', msg),
+        onLeave: () => this._sendData({ ty: 'rp', ro: room.getID() })
+      })
+
+      const roomEventsListener = this._processRequestResponse(response => {
+        const json = JSON.parse(response)
+        switch(json['ty']) {
+          case 'roles':
+            room.roles = room.roles.concat(json['roles'].map(role => ({ roleID: API_ROLES_KEYS[role.r], userID: role.uo })))
+            break
+
+          case 'ud':
+            (() => {
+              const testPlayer = json['data'][0]
+              const playersDiedEvent = testPlayer['a']
+              const newVoteForPlayerEvent = testPlayer['v']
+              if (playersDiedEvent) {
+                const _roles = clone(room.roles)
+                room.roles = json['data'].map(user => ({ roleID: user.r, userID: user.uo }))
+                const newRevealedRoles = room.roles.filter(role => !_roles.some(r => r.userID === role.userID) )
+                newRevealedRoles.forEach(role => room._eventsSystem.internal.broadcast('roleRevealed', role.roleID, role.userID))
+
+                const _deadPlayers = clone(room.deadPlayers)
+                room.deadPlayers = json['data'].filter(user => !user.a).map(user => user.uo)
+                const newDeadPlayers = room.deadPlayers.filter(playerID => !_deadPlayers.some(id => id === playerID))
+                newDeadPlayers.forEach(userID => room._eventsSystem.internal.broadcast('playerDied', userID))
+              } else if (newVoteForPlayerEvent) {
+                json['data'].forEach(player => {
+                  room._eventsSystem.internal.broadcast('newVoteForPlayer', player['uo'], player['v'])
+                })
+              }
+            })()
+            break
+
+          case 'gd':
+          case 'gs':
+            room._eventsSystem.internal.broadcast('phaseChange', { 
+              0: 'nighttime_chat', 
+              1: 'nighttime_vote',
+              2: 'daytime_chat',
+              3: 'daytime_vote'
+            }[json['d']])
+            break
+
+          default:
+            break
+        }
+      })
+
+      this._clientSocket.addListener('data', roomEventsListener)
+
+      room.chatUnsubscribe = unsubscribe
+      room.eventsUnsubscribe = () => {
+        this._clientSocket.removeListener('data', roomEventsListener)
+      }
     }
 
     const result = await this._sendRequest({ ty: 're', psw: password, ro: room.getID() }, 're')
@@ -84,15 +183,7 @@ class MafiaOnlineAPIRooms {
         throw new MafiaOnlineAPIError('ERRULNE', 'Your level is not high enough to join this room')
   
       case 're':
-        (() => {
-          room.joined = true
-          this._sendData({ ty: 'cp', ro: room.getID() })
-          const unsubscribe = this._manageChat({
-            onMessage: room._onMessage.bind(room),
-            onLeave: () => this._sendData({ ty: 'rp', ro: room.getID() })
-          })
-          room.chatUnsubscribe = unsubscribe
-        })()
+        joined()
         return true
   
       default:
@@ -105,8 +196,9 @@ class MafiaOnlineAPIRooms {
    * @memberof module:mafiaonline
    * @param {Room} room Room instance. Must be obtained from monitoring by calling startRoomMonitoring() function
    */
-  async leaveRoom(room: Room) {
+  async leaveRoom(room: MafiaRoom) {
     await room.chatUnsubscribe()
+    await room.eventsUnsubscribe()
   }
 }
 

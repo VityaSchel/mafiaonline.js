@@ -18,12 +18,17 @@
         * [.PlayerMiniProfile#isFemale()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isFemale) ⇒ <code>boolean</code>
         * [.PlayerMiniProfile#getSex()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getSex) ⇒ <code>number</code>
     * [.MafiaRoom](#module_mafiaonline.MafiaRoom)
+        * [.MafiaRoom](#module_mafiaonline.MafiaRoom.MafiaRoom)
+            * [new MafiaRoom()](#new_module_mafiaonline.MafiaRoom.MafiaRoom_new)
         * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
         * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
         * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
+        * [.MafiaRoom#getMinimumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumPlayers) ⇒ <code>number</code>
+        * [.MafiaRoom#getMaximumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMaximumPlayers) ⇒ <code>number</code>
         * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
         * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
         * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
+        * [.MafiaRoom#voteForPlayer()](#module_mafiaonline.MafiaRoom.MafiaRoom+voteForPlayer)
     * [.MafiaUser](#module_mafiaonline.MafiaUser)
         * [.MafiaUser#getID()](#module_mafiaonline.MafiaUser.MafiaUser+getID) ⇒ <code>number</code>
         * [.MafiaUser#getName()](#module_mafiaonline.MafiaUser.MafiaUser+getName) ⇒ <code>string</code>
@@ -45,7 +50,7 @@
     * [.MafiaOnlineAPIChat#joinGlobalChat(callback)](#module_mafiaonline.MafiaOnlineAPIChat+joinGlobalChat) ⇒ <code>function</code>
     * [.MafiaOnlineAPIChat#sendToGlobalChat(content, messageStyle)](#module_mafiaonline.MafiaOnlineAPIChat+sendToGlobalChat)
     * [.MafiaOnlineAPIChat#_manageChat(events)](#module_mafiaonline.MafiaOnlineAPIChat+_manageChat) ⇒ <code>function</code>
-    * [.MafiaOnlineAPIRooms#startRoomMonitoring(callback)](#module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring) ⇒ <code>function</code>
+    * [.MafiaOnlineAPIRooms#startRoomMonitoring()](#module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring) ⇒ <code>object</code> \| <code>function</code> \| <code>function</code> \| <code>function</code> \| <code>function</code>
     * [.MafiaOnlineAPIRooms#joinRoom(room, [password])](#module_mafiaonline.MafiaOnlineAPIRooms+joinRoom)
     * [.MafiaOnlineAPIRooms#leaveRoom(room)](#module_mafiaonline.MafiaOnlineAPIRooms+leaveRoom)
 
@@ -163,12 +168,26 @@
 **Kind**: static class of [<code>mafiaonline</code>](#module_mafiaonline)  
 
 * [.MafiaRoom](#module_mafiaonline.MafiaRoom)
+    * [.MafiaRoom](#module_mafiaonline.MafiaRoom.MafiaRoom)
+        * [new MafiaRoom()](#new_module_mafiaonline.MafiaRoom.MafiaRoom_new)
     * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
     * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
     * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
+    * [.MafiaRoom#getMinimumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumPlayers) ⇒ <code>number</code>
+    * [.MafiaRoom#getMaximumPlayers()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMaximumPlayers) ⇒ <code>number</code>
     * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
     * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
     * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
+    * [.MafiaRoom#voteForPlayer()](#module_mafiaonline.MafiaRoom.MafiaRoom+voteForPlayer)
+
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom"></a>
+
+#### MafiaRoom.MafiaRoom
+**Kind**: static class of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+<a name="new_module_mafiaonline.MafiaRoom.MafiaRoom_new"></a>
+
+##### new MafiaRoom()
+<p>Subscribe to events ('message': (msg: ChatMessage) =&gt; void; 'gameStarted': () =&gt; void; 'roleRevealed': (roleID: number, userID: string) =&gt; void; 'playerDied': (userID: string) =&gt; void; 'newVoteForPlayer': (userID: string, votes: number) =&gt; void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') =&gt; void)</p>
 
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+getID"></a>
 
@@ -191,6 +210,20 @@
 
 **Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
 **Returns**: <code>number</code> - <p>Minimum level for room</p>  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumPlayers"></a>
+
+#### MafiaRoom.MafiaRoom#getMinimumPlayers() ⇒ <code>number</code>
+<p>Get minimum number of players required to start the game</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+**Returns**: <code>number</code> - <p>Minimum number of players</p>  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+getMaximumPlayers"></a>
+
+#### MafiaRoom.MafiaRoom#getMaximumPlayers() ⇒ <code>number</code>
+<p>Get maximum number of players that can join the room</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+**Returns**: <code>number</code> - <p>Maximum number of players</p>  
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected"></a>
 
 #### MafiaRoom.MafiaRoom#isPasswordProtected() ⇒ <code>boolean</code>
@@ -207,6 +240,12 @@
 
 #### MafiaRoom.MafiaRoom#leave()
 <p>Leaves the room</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+voteForPlayer"></a>
+
+#### MafiaRoom.MafiaRoom#voteForPlayer()
+<p>Vote for player in second phase (daytime and nighttime)</p>
 
 **Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
 <a name="module_mafiaonline.MafiaUser"></a>
@@ -400,16 +439,11 @@
 
 <a name="module_mafiaonline.MafiaOnlineAPIRooms+startRoomMonitoring"></a>
 
-### MafiaOnlineAPI.MafiaOnlineAPIRooms#startRoomMonitoring(callback) ⇒ <code>function</code>
+### MafiaOnlineAPI.MafiaOnlineAPIRooms#startRoomMonitoring() ⇒ <code>object</code> \| <code>function</code> \| <code>function</code> \| <code>function</code> \| <code>function</code>
 <p>Get rooms list and subscribe for changes</p>
 
 **Kind**: static method of [<code>mafiaonline</code>](#module_mafiaonline)  
-**Returns**: <code>function</code> - <p>Function to unsubscribe</p>  
-
-| Param | Description |
-| --- | --- |
-| callback | <p>Callback that gets called with argument of type Room</p> |
-
+**Returns**: <code>object</code> - <p>result Returning object</p><code>function</code> - <p>result.unsubscribe Function to unsubscribe. Always unsubscribe when you're not using monitoring!</p><code>function</code> - <p>result.getRooms Get updating array of rooms (local cache, not request)</p><code>function</code> - <p>result.addEventListener Subscribe to updates of specified event type ('addRoom': (room: MafiaRoom) =&gt; void; 'removeRoom': (room: MafiaRoom) =&gt; void; 'updatePlayersInRoom': (roomID: string, players: number) =&gt; void; 'updateRoomStatus': (roomID: string, status: number) =&gt; void)</p><code>function</code> - <p>result.removeEventListener Unsubscribe from updates of specified event type</p>  
 <a name="module_mafiaonline.MafiaOnlineAPIRooms+joinRoom"></a>
 
 ### MafiaOnlineAPI.MafiaOnlineAPIRooms#joinRoom(room, [password])

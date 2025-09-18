@@ -34,7 +34,7 @@ export interface MafiaOnlineAPIClassDeclarations {
 }
 
 export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
-  constructor(credentials: MafiaOnlineAPICredentials, verboseLogs = false) {
+  constructor(credentials: MafiaOnlineAPICredentials, verboseLogs: boolean | string[] = false) {
     let tokenCredentials
     if (credentials.token && credentials.userID){
       tokenCredentials = true
@@ -46,8 +46,9 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
       throw new MafiaOnlineAPIError('ERRCOSTRUCTOR', 'Error while initializing class: credentials must be one of { token: string, userID: string } or { email: string, password: string }')
     }
 
-    this.logs = verboseLogs
-    if(this.logs) console.log('To stop MafiaOnline.js from logging debug into console, pass false as second argument to constructor.')
+    this.logs = verboseLogs === true || Array.isArray(verboseLogs)
+    this.verboseLogs = verboseLogs
+    if(this.logs) this.log('To stop MafiaOnline.js from logging debug into console, pass false as second argument to constructor.')
 
     this.account = null
     this.token = null
@@ -87,9 +88,12 @@ export class MafiaOnlineAPIBase implements MafiaOnlineAPIClassDeclarations {
   deviceID: string
   data: string[]
   _closed: boolean
+  verboseLogs: boolean | string[]
 
   log(...messages) {
-    if(this.logs) console.log((new Date()).toISOString(), 'Mafiaonline.js:', ...messages)
+    if (!this.logs || this.verboseLogs === false) return
+    if (this.verboseLogs === true) console.log((new Date()).toISOString(), 'Mafiaonline.js:', ...messages)
+    else this.verboseLogs.push(`${new Date().toISOString()} Mafiaonline.js: ${messages.join(' ')})`)
   }
 
   /**

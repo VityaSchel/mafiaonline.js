@@ -1,41 +1,40 @@
 # Mafia Online API
 
-# :exclamation: WORK IN PROGRESS :exclamation:
+I made a decision to translate documentation to Russian language since 99% of game's players speak primaraly Russian. If you don't know Russian language, please use Google Translate.
 
-NodeJS module with a set of useful methods to interact with [Mafia Online](https://play.google.com/store/apps/details?id=com.tokarev.mafia) API from dotapp (Vladimir Tokarev).
+# :exclamation: В разработке :exclamation:
 
-This library is heavily based on work of [@Zakovskiy](https://github.com/Zakovskiy), props to him for reverse-engineering such a horrible thing as Mafia Online API, which I tried to [do myself](https://github.com/VityaSchel/mafia-tools) back in August, 2021.
+Обертка API мобильной игры [Mafia Online](https://play.google.com/store/apps/details?id=com.tokarev.mafia) от dottap (Владимир Токарев) со списком полезных методов для интерактирования с API, написанная на NodeJS.
 
-TypeScript supported!
+Эта библиотека взяла свое начало на основе труда [@Zakovskiy](https://github.com/Zakovskiy), спасибо ему большое за ревернс-инженеринг такой ужасающей вещи как Mafia Online API, кстати я пытался и сам [это сделать](https://github.com/VityaSchel/mafia-tools) в августе 2021.
 
-## Features
+TypeScript поддерживается!
+
+## Фичи
 
 - [x] TypeScript
 - [x] JSDoc
-- [x] Ban error handler
-- [x] REST API: Sign up, email verification
-- [x] Disconnection handler
-- [x] Tested with Jest
-- [x] Examples
-- [x] Sign in with email/nickname&password or token&userid
-- [x] Global chat subscription 
-- [x] Rooms monitoring
-- [x] Join/leave rooms
-- [ ] Interact with chat in rooms
-- [ ] Handle incorrect password when trying to connect to room
-- [ ] Implement events system inside room (killed, voting)
-- [ ] Tie requests to expected response codes
-- [ ] Implement all roles actions
-- [ ] Replace all short codes with constants
-- [ ] Move this to GitHub projects
+- [x] Обработка бана
+- [x] REST API: Регистрация, подтверждение почты
+- [x] Обработка обрыва соединения и отключения
+- [x] Тесты с Jest
+- [x] Примеры
+- [x] Вход в аккаунт с емейл/почтой и паролем или токеном и User ID
+- [x] Полная поддержка глобального чата 
+- [x] Мониторинг комнат, получение списка игроков в них
+- [x] Вход/выход из комнат
+- [ ] Полная поддержка чата внутри лобби комнат
+- [x] Поддержка комнат с паролем
+- [ ] Система событий в чатах комнат (голосование, смерть и др.)
+- [ ] Поддержка действий всех ролей
 
-## Install
+## Установка
 
 ```
 npm i mafiaonline.js
 ```
 
-## Use
+## Использование
 
 ```js
 import MafiaOnlineAPI from 'mafiaonline.js'
@@ -43,18 +42,27 @@ import MafiaOnlineAPI from 'mafiaonline.js'
 const mafiaOnlineAPI = new MafiaOnlineAPI({ email: 'test@example.com', password: 'pythonsucks228' })
 ```
 
-## Documentation
+## Документация
 
-See API reference at [docs/api-reference.md](./docs/api-reference.md)
+[API reference](https://github.com/VityaSchel/mafiaonline.js/wiki/API-Reference)
 
-## Examples
+[Другая информация про API](https://github.com/VityaSchel/mafiaonline.js/wiki)
 
-Examples can be found under [examples](./examples/) dir
+## Примеры
 
-**If you want to make a global-chat bot, see [examples/examples.md#global-chat-bot](./examples/examples.md#global-chat-bot)**
+[Список примеров и описание](https://github.com/VityaSchel/mafiaonline.js/wiki/Примеры)
 
-## Caveats
+Примеры можно найти в папке [examples](./examples/)
 
-- REST API is subject of rate limiting, which is not connected to TCP rate limiting. You should treat both servers are separate. In REST API, seconds left until rate limit unban is declared in "data" field. Methods of REST API are tagged with `@see ## REST API` in JSDoc documentation
-- Bans are expanded on all accounts using same IP-address and deviceID
-- IP-addresses are collected and linked to account starting from sign up and each time you do any action
+**Если вы хотите увидеть, как сделать бота в глобальном чате, посмотрите [вики](https://github.com/VityaSchel/mafiaonline.js/wiki/%D0%9F%D1%80%D0%B8%D0%BC%D0%B5%D1%80%D1%8B#global-chat-bot)**
+
+## Предупреждения
+
+- REST API подвережен rate-limiting, который никак не соединен с rate-limiting сокетов (простите за англицизмы). Вы должны считать, что оба сервера разные. 
+- В REST API, секунды до разбана из-за частых запросов указаны в поле `data`. Методы REST API имеют тег `@see ## REST API` в JSDoc документации
+- Баны распространяются на все аккаунты с тем же IP-адресом и deviceID
+- IP-адреса сохраняются в список вашего аккаунта в течение всего времени его существования, начиная от регистрации и каждый раз, когда вы делаете любой запрос
+
+## Лицензия
+
+[MIT](./LICENSE)

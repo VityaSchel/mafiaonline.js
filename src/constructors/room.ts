@@ -1,7 +1,12 @@
 import MafiaOnlineAPIBase from '../base.js'
+import setupEventSystem, { EventsSystem } from '../helpers/_eventsSystem.js'
 import { hashPassword } from '../utils.js'
-import ChatMessage, { MessageType } from './chatMessage.js'
+// import ChatMessage, { MessageType } from './chatMessage.js'
 import PlayerMiniProfile from './playerMiniProfile.js'
+import { API_ROLES_KEYS } from '../data/constants.js'
+import MafiaUser from './user.js'
+
+type EventType = 'message' | 'gameStarted' | 'rolesRevealed' | 'phaseChange'
 
 /**
  * @class MafiaRoom
@@ -13,32 +18,29 @@ class MafiaRoom {
   joined: boolean
   _join: (roomInstance: MafiaRoom, password?: string) => void
   _leave: (roomInstance: MafiaRoom) => void
-  // onMessage?: (message: ChatMessage) => void
   chatUnsubscribe: () => void
-  _chatEventsListeners: { onMessage: Array<(msg: object) => void> } = { onMessage: [] }
+  eventsUnsubscribe: () => void
+  _eventsSystem: EventsSystem
   super: MafiaOnlineAPIBase | any
+  roles: { userID: string, roleID: typeof API_ROLES_KEYS[keyof typeof API_ROLES_KEYS] }[]
+  deadPlayers: string[]
 
-  chat: {
-    on: (event: 'message'/* | 'text_message'*/, callback: (msg: ChatMessage) => void) => void
-    sendText: (msg: string) => void
-  }
+  /**
+   * Subscribe to events ('message': (msg: ChatMessage) => void; 'gameStarted': () => void; 'roleRevealed': (roleID: number, userID: string) => void; 'playerDied': (userID: string) => void; 'newVoteForPlayer': (userID: string, votes: number) => void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') => void)
+   * @memberof module:mafiaonline.MafiaRoom
+   */
+  addEventListener: (eventType: EventType, callback: () => void) => void
+  removeEventListener: (eventType: EventType, callback: () => void) => void
+  sendText: (msg: string) => void
 
   constructor(data) {
     this.data = data
-
-    // @ts-expect-error
-    this.chat = {}
-    this.chat.on = (event: 'message'/* | 'text_message'*/, callback: (msg: ChatMessage) => void) => {
-      switch(event) {
-        case 'message':
-          this._chatEventsListeners.onMessage.push(callback)
-          break
-
-        default:
-          break
-      }
-    }
-    this.chat.sendText = (msgText: string) => {
+    
+    this._eventsSystem = setupEventSystem(['message', 'gameStarted', 'rolesRevealed', 'phaseChange'])
+    
+    this.addEventListener = this._eventsSystem.external.addEventListener, 
+    this.removeEventListener = this._eventsSystem.external.removeEventListener, 
+    this.sendText = (msgText: string) => {
       this.super._sendData({ ty: 'rmc', m: { ro: this.getID(), tx: msgText, t: 1 } })
     }
   }
@@ -71,6 +73,24 @@ class MafiaRoom {
   }
 
   /**
+   * Get minimum number of players required to start the game
+   * @memberof module:mafiaonline.MafiaRoom
+   * @returns {number} Minimum number of players
+   */
+  getMinimumPlayers(): number {
+    return this.data.mnp
+  }
+
+  /**
+   * Get maximum number of players that can join the room
+   * @memberof module:mafiaonline.MafiaRoom
+   * @returns {number} Maximum number of players
+   */
+  getMaximumPlayers(): number {
+    return this.data.mxp
+  }
+
+  /**
    * Returns true is room is password protected
    * @memberof module:mafiaonline.MafiaRoom
    * @returns {boolean}
@@ -100,15 +120,12 @@ class MafiaRoom {
     this._leave.bind(this.super)(this)
   }
 
-  _onMessage(msg: ChatMessage) {
-    // const broadcastToListeners = (listenersType: string) => this._chatEventsListeners[listenersType].forEach(callback => callback(msg))
-    // TODO: implement more event types
-    // switch (msg.getType()) {
-    //   case '':
-    //     broadcastToListeners('onMessage')
-    //     break
-    // }
-    this._chatEventsListeners.onMessage.forEach(callback => callback(msg))
+  /**
+   * Vote for player in second phase (daytime and nighttime)
+   * @memberof module:mafiaonline.MafiaRoom
+   */
+  async voteForPlayer(userID: string) {
+    this.super._sendData({ ty: 'vpl', uo: userID })
   }
 }
 

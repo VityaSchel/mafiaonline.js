@@ -1,7 +1,9 @@
 {
   "name": "mafiaonline.js",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "mafiaonline.py written in NodeJS",
+  "author": "Viktor Shchelochkov <hi@hloth.dev> (https://hloth.dev)",
+  "license": "MIT",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -19,14 +21,13 @@
     "type": "git",
     "url": "git+https://github.com/VityaSchel/mafiaonline.js.git"
   },
-  "author": "vityaschel <hi@hloth.dev> (https://hloth.dev/)",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/VityaSchel/mafiaonline.js/issues"
   },
   "homepage": "https://github.com/VityaSchel/mafiaonline.js#readme",
   "dependencies": {
     "eslint-plugin-jest": "^26.1.5",
+    "just-clone": "^6.0.1",
     "md5": "^2.3.0",
     "nanoid": "^3.3.3",
     "node-fetch": "^3.2.3"
