@@ -18,6 +18,8 @@
         * [.PlayerMiniProfile#isFemale()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+isFemale) ⇒ <code>boolean</code>
         * [.PlayerMiniProfile#getSex()](#module_mafiaonline.PlayerMiniProfile.PlayerMiniProfile+getSex) ⇒ <code>number</code>
     * [.MafiaRoom](#module_mafiaonline.MafiaRoom)
+        * [.MafiaRoom](#module_mafiaonline.MafiaRoom.MafiaRoom)
+            * [new MafiaRoom()](#new_module_mafiaonline.MafiaRoom.MafiaRoom_new)
         * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
         * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
         * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
@@ -26,6 +28,7 @@
         * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
         * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
         * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
+        * [.MafiaRoom#voteForPlayer()](#module_mafiaonline.MafiaRoom.MafiaRoom+voteForPlayer)
     * [.MafiaUser](#module_mafiaonline.MafiaUser)
         * [.MafiaUser#getID()](#module_mafiaonline.MafiaUser.MafiaUser+getID) ⇒ <code>number</code>
         * [.MafiaUser#getName()](#module_mafiaonline.MafiaUser.MafiaUser+getName) ⇒ <code>string</code>
@@ -165,6 +168,8 @@
 **Kind**: static class of [<code>mafiaonline</code>](#module_mafiaonline)  
 
 * [.MafiaRoom](#module_mafiaonline.MafiaRoom)
+    * [.MafiaRoom](#module_mafiaonline.MafiaRoom.MafiaRoom)
+        * [new MafiaRoom()](#new_module_mafiaonline.MafiaRoom.MafiaRoom_new)
     * [.MafiaRoom#getID()](#module_mafiaonline.MafiaRoom.MafiaRoom+getID) ⇒ <code>string</code>
     * [.MafiaRoom#getName()](#module_mafiaonline.MafiaRoom.MafiaRoom+getName) ⇒ <code>string</code>
     * [.MafiaRoom#getMinimumLevel()](#module_mafiaonline.MafiaRoom.MafiaRoom+getMinimumLevel) ⇒ <code>number</code>
@@ -173,6 +178,16 @@
     * [.MafiaRoom#isPasswordProtected()](#module_mafiaonline.MafiaRoom.MafiaRoom+isPasswordProtected) ⇒ <code>boolean</code>
     * [.MafiaRoom#join()](#module_mafiaonline.MafiaRoom.MafiaRoom+join)
     * [.MafiaRoom#leave()](#module_mafiaonline.MafiaRoom.MafiaRoom+leave)
+    * [.MafiaRoom#voteForPlayer()](#module_mafiaonline.MafiaRoom.MafiaRoom+voteForPlayer)
+
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom"></a>
+
+#### MafiaRoom.MafiaRoom
+**Kind**: static class of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+<a name="new_module_mafiaonline.MafiaRoom.MafiaRoom_new"></a>
+
+##### new MafiaRoom()
+<p>Subscribe to events ('message': (msg: ChatMessage) =&gt; void; 'gameStarted': () =&gt; void; 'roleRevealed': (roleID: number, userID: string) =&gt; void; 'playerDied': (userID: string) =&gt; void; 'newVoteForPlayer': (userID: string, votes: number) =&gt; void; 'phaseChange': (phase: 'daytime_chat' | 'daytime_vote' | 'nighttime_chat' | 'nighttime_vote') =&gt; void)</p>
 
 <a name="module_mafiaonline.MafiaRoom.MafiaRoom+getID"></a>
 
@@ -225,6 +240,12 @@
 
 #### MafiaRoom.MafiaRoom#leave()
 <p>Leaves the room</p>
+
+**Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
+<a name="module_mafiaonline.MafiaRoom.MafiaRoom+voteForPlayer"></a>
+
+#### MafiaRoom.MafiaRoom#voteForPlayer()
+<p>Vote for player in second phase (daytime and nighttime)</p>
 
 **Kind**: static method of [<code>MafiaRoom</code>](#module_mafiaonline.MafiaRoom)  
 <a name="module_mafiaonline.MafiaUser"></a>

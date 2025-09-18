@@ -1,8 +1,8 @@
 {
   "name": "mafiaonline.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "mafiaonline.py written in NodeJS",
-  "author": "Viktor Shchelochkov <hi@hloth.dev> (https://hloth.dev)"
+  "author": "Viktor Shchelochkov <hi@hloth.dev> (https://hloth.dev)",
   "license": "MIT",
   "main": "dist/index.js",
   "type": "module",
@@ -21,8 +21,6 @@
     "type": "git",
     "url": "git+https://github.com/VityaSchel/mafiaonline.js.git"
   },
-  "author": "vityaschel <hi@hloth.dev> (https://hloth.dev/)",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/VityaSchel/mafiaonline.js/issues"
   },
